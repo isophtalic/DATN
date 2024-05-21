@@ -36,9 +36,9 @@ const view = () => {
 }
 
 const newItem = (input: Partial<DataRuleInterface>) => {
-    const { id, file, content, secrule_id } = pick(input, ['id', 'file', 'content', 'secrule_id'])
-    return handleRequest<SecRuleInterface>(
-        () => request.post(`${dataruleBaseURL}`, { id, file, content, secrule_id }, HeaderAuth),
+    const { name, description, content, secrule_id } = pick(input, ['name', 'description', 'content', 'secrule_id'])
+    return handleRequest<DataRuleInterface>(
+        () => request.post(`${dataruleBaseURL}`, { name, description, content, secrule_id }, HeaderAuth),
         r => {
             return {
                 data: r.data.data,

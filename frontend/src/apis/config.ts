@@ -9,6 +9,7 @@ export const authBaseURL = `${V1}/auth`
 export const proxyBaseURL = `${V1}/proxy`
 export const sourceBaseURL = `${V1}/source`
 export const accesslistBaseURL = `${V1}/accesslist`
+export const blacklistBaseURL = `${V1}/blacklist`
 export const destBaseURL = `${V1}/destination`
 export const secruleBaseURL = `${V1}/secrule`
 export const rulesetBaseURL = `${V1}/ruleset`

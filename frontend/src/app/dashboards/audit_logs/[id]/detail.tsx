@@ -66,7 +66,11 @@ const DetailPage = ({ data, action_id }: DetailPageProps) => {
                                         </div>
                                         <div className='md:w-3/4 md:py-3 break-all lg:break-words'>
                                             {element.key === "Changes" ? (
-                                                element.value && <JsonViewer data={JSON.parse(element.value)} />
+                                                data.name === "delete" ? (
+                                                    <MinusIcon className='w-10' />
+                                                ) : (
+                                                    element.value && <JsonViewer data={JSON.parse(element.value)} />
+                                                )
                                                 // <span>{element.value}</span>
                                             ) : (
                                                 element.key === "Original" ? (

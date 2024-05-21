@@ -63,8 +63,8 @@ const BlacklistTable = () => {
             }
 
             if (newData !== undefined) {
-                setPageCount(newData.total_pages)
-                setData(newData.records);
+                setPageCount(newData.total_pages ?? 1)
+                setData(newData.records ?? []);
             }
         }
         fetchData()

@@ -93,10 +93,10 @@ export function DataTable<ProxyViewer, TValue>({
         }
     }
 
-    const viewDetail = (id: string) => {
-        console.log("🚀 ~ viewDetail ~ e:", id)
-        router.push(`/dashboards/proxy/${id}`)
-    }
+    // const viewDetail = (id: string) => {
+    //     console.log("🚀 ~ viewDetail ~ e:", id)
+    //     router.push(`/dashboards/proxy/${id}`)
+    // }
 
     const handlePrevousPage = () => {
         if (table.getCanPreviousPage()) {
@@ -142,9 +142,9 @@ export function DataTable<ProxyViewer, TValue>({
                             table?.getRowModel().rows.map((row, index) => (
                                 <TableRow
                                     key={row.id}
-                                    onClick={() => viewDetail(data[index].proxy_id)}
+                                    // onClick={() => viewDetail(data[index].proxy_id)}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="cursor-pointer hover:bg-slate-200"
+                                    className="hover:bg-slate-200"
                                 >
                                     {row.getVisibleCells().map((cell) => {
                                         return (

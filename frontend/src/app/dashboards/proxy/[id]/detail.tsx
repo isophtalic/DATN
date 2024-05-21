@@ -1,3 +1,4 @@
+'use client'
 import React from 'react'
 import Link from "next/link"
 
@@ -6,14 +7,38 @@ interface DetailPageProps {
     proxy_id: string
 }
 
+import { useRouter } from 'next/navigation'
+
 import { TrashIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
+import ProxyAPI from '@/apis/proxy'
+import { toast } from '@/components/ui/use-toast'
+
+const deleteProxy = async (id: string, router: AppRouterInstance) => {
+    try {
+        const res = await ProxyAPI.deleteByID(id)
+        if (res.success) {
+            toast({
+                description: "Delete Successfully"
+            })
+            router.back()
+        } else {
+            throw new Error(res.message)
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`
+        })
+    }
+}
 
 const DetailPage = ({ data, proxy_id }: DetailPageProps) => {
     console.log(data);
 
-    // const router = useRouter()
+    const router = useRouter()
 
     // // const handleEditProxy = (id: string) => {
     // //     router.push(`/dashboards/proxy/${id}/edit`)
@@ -24,7 +49,7 @@ const DetailPage = ({ data, proxy_id }: DetailPageProps) => {
         {
             title: `Proxy Detail: ${data.source.hostname}`,
             icon: <div className='ml-auto flex items-center'>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
+                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }} onClick={() => deleteProxy(proxy_id, router)}>
                     {/* TODO: delete proxy*/}
                     <TrashIcon className="w-7 h-7 " />
                 </div>

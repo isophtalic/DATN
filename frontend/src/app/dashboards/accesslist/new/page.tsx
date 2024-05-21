@@ -28,8 +28,10 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import ProxyAPI from '@/apis/proxy'
+import AccesslistAPI from '@/apis/accesslist'
+import { toast } from '@/components/ui/use-toast'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -49,7 +51,7 @@ interface DataPage {
 }
 
 const NewAccesslist = () => {
-    const router = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
 
 
@@ -63,7 +65,29 @@ const NewAccesslist = () => {
     const { formState: { errors } } = form
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        var newItem: AccesslistInterface = {
+            accesslist_id: '',
+            name: values.name,
+            updated_at: undefined
+        }
+        try {
+            let res = await AccesslistAPI.newItem(newItem)
+            if (res.success) {
+                toast({
+                    description: "Created",
+                })
+                router.back()
+                return
+            }
+
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
+        }
     }
 
     const datapage: DataPage[] = [

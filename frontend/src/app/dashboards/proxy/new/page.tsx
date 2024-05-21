@@ -139,10 +139,10 @@ const NewProxy = () => {
             }
 
             if (dataAccesslist !== undefined)
-                setSelectAccesslist(dataAccesslist.records);
+                setSelectAccesslist(dataAccesslist.records ?? []);
 
             if (dataSecRule !== undefined)
-                setSelectSecRule(dataSecRule.records);
+                setSelectSecRule(dataSecRule.records ?? []);
         }
         fetchData()
     }, [])
@@ -195,6 +195,7 @@ const NewProxy = () => {
             toast({
                 variant: "destructive",
                 title: "Somethinmg went wrong",
+                description: `${error}`
             })
         }
 
@@ -327,7 +328,7 @@ const NewProxy = () => {
 
                                                                                     element.field === "accesslist" ? (
                                                                                         <Select
-                                                                                            value={field.value}
+                                                                                            value={field.value as string}
                                                                                             onValueChange={(value) => { field.onChange(value) }}
                                                                                         >
                                                                                             <SelectTrigger className="w-[100%]">
@@ -342,7 +343,7 @@ const NewProxy = () => {
                                                                                     ) : (
                                                                                         element.field === "rule" ? (
                                                                                             <Select
-                                                                                                value={field.value}
+                                                                                                value={field.value as string}
                                                                                                 onValueChange={(value) => field.onChange(value)}
                                                                                             >
                                                                                                 <SelectTrigger className="w-[100%]">

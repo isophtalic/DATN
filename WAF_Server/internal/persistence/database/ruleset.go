@@ -37,7 +37,7 @@ func (repo *PostgresRuleSetProvider) Save(rs model.RuleSet) error {
 func (repo *PostgresRuleSetProvider) List(pgn *pagination.Pagination[model.RuleSet]) (*pagination.Pagination[model.RuleSet], error) {
 	database := repo.db
 	results := make([]model.RuleSet, 0)
-	tx := database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Find(&results)
+	tx := database.Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
 	pgn.Records = results
 
 	if tx.Error != nil {
@@ -83,9 +83,8 @@ func (repo *PostgresRuleSetProvider) FindByID(id string) (model.RuleSet, error) 
 
 func (repo *PostgresRuleSetProvider) FindBySecRuleIDAndIdRule(sr_id string, id int) (model.RuleSet, error) {
 	database := repo.db
-
 	var result model.RuleSet
-	tx := database.Model(&model.RuleSet{}).Where(&model.RuleSet{ID: id, SecRuleID_FK: sr_id}).Find(&result)
+	tx := database.Model(&model.RuleSet{}).Where("secrule_id = ?", sr_id).Where("id = ?", id).First(&result)
 	if tx.Error != nil {
 		return model.RuleSet{}, tx.Error
 	}

@@ -1,7 +1,6 @@
 package service
 
 import (
-	"errors"
 	"fmt"
 	"time"
 	"waf_server/internal/model"
@@ -17,12 +16,8 @@ func Create(rs model.RuleSet, actor string) error {
 		return fmt.Errorf("invalid foreign_key")
 	}
 
-	_, err := persistence.SecRuleSet().FindByID(srs_id)
-	if errors.Is(err, persistence.GormErrRecordNotFound) {
-		return fmt.Errorf("error: record secruleset %s not found", srs_id)
-	}
-
-	_, err = persistence.RuleSet().FindBySecRuleIDAndIdRule(srs_id, rs.ID)
+	rule, err := persistence.RuleSet().FindBySecRuleIDAndIdRule(srs_id, rs.ID)
+	fmt.Println(rule)
 	if err == nil {
 		return fmt.Errorf("id %d is already existed", rs.ID)
 	}

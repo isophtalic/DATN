@@ -28,8 +28,10 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
-import ProxyAPI from '@/apis/proxy'
+import { useParams, useRouter } from 'next/navigation'
+import { toast } from "@/components/ui/use-toast"
+import SecRuleAPI from '@/apis/secruleset'
+
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -50,7 +52,7 @@ interface DataPage {
 }
 
 const NewSecrule = () => {
-    const router = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
 
 
@@ -65,6 +67,34 @@ const NewSecrule = () => {
     const { formState: { errors } } = form
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
+        var newSecRule: SecRuleInterface = {
+            secrule_id: '',
+            created_at: undefined,
+            updated_at: undefined,
+            name: values.name,
+            debug_log_level: values.debug_log_level
+        }
+        try {
+            let res = await SecRuleAPI.newItem(newSecRule)
+            if (res.success) {
+                toast({
+                    description: "Created",
+                })
+                router.back()
+                return
+            }
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: res.message
+            })
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
+        }
         console.log(values)
     }
 

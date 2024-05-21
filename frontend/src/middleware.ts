@@ -8,6 +8,7 @@ export function middleware(request: NextRequest) {
     if (token) {
         return NextResponse.next();
     }
+    console.log("🚀 ~ middleware ~ NextResponse.toString():", NextResponse.toString())
     return NextResponse.redirect(url);
 }
 

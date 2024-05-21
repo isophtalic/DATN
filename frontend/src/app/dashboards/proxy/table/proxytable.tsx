@@ -1,105 +1,132 @@
-'use client'
-import React, { useEffect, useRef, useState } from 'react'
+'use client';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
-import { columns } from './columns'
-import { DataTable } from './data-table'
-import { PaginationState } from '@tanstack/react-table'
-import { Skeleton } from "@/components/ui/skeleton"
-import { InitialPaginationState } from '@/store/constants/const'
-import ProxyAPI from '@/apis/proxy'
-import { useRouter } from 'next/navigation'
+import { getProxyColumns } from './columns';
+import { DataTable } from './data-table';
+import { PaginationState } from '@tanstack/react-table';
+import { Skeleton } from "@/components/ui/skeleton";
+import { InitialPaginationState } from '@/store/constants/const';
+import ProxyAPI from '@/apis/proxy';
+import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
+import { toast } from '@/components/ui/use-toast';
 
-
-import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
-import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
-
-async function getData(pagination: PaginationState): Promise<any> {
-    let result: any[] = []
+const getData = async (pagination: PaginationState): Promise<any> => {
     try {
-        const response = await ProxyAPI.view(pagination)
-        return response.data
+        const response = await ProxyAPI.view(pagination);
+        return response.data;
     } catch (error) {
-        console.log(error);
+        console.error(error);
     }
-}
+};
+
+const deleteProxy = async (id: string, refreshData: () => void) => {
+    try {
+        const res = await ProxyAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            refreshData(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
+    }
+};
 
 const ProxyTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
-    const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
-    const [data, setData] = useState<ProxyViewer[]>([]);
+    const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState);
+    const [data, setData] = useState<any[]>([]);
     const [pageCount, setPageCount] = useState<number>(1);
 
-    // const initData = await getData(initialStatePagination)
-
-    // let dataRef = useRef<ProxyViewer[]>([])
+    const router = useRouter();
 
     const handlePaginationChange = (pagination: PaginationState) => {
         setLoading(true);
-        // console.log("🚀 ~ handlePaginationChange ~ pagination:", pagination)
-        setPagination(() => pagination)
-    }
-
-    const router = useRouter()
+        setPagination(pagination);
+    };
 
     const handleBtnCreateProxy = () => {
-        router.push("/dashboards/proxy/new")
-    }
+        router.push("/dashboards/proxy/new");
+    };
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(false);
-            var newData
-            try {
-                newData = await getData(pagination)
-                // console.log("🚀 ~ fetchData ~ newData:", newData)
-            } catch (error) {
-                console.log("🚀 ~ fetchData ~ error:", error)
-                return
-            }
-
-            if (newData !== undefined) {
-                setPageCount(newData.total_pages)
+    const fetchData = async () => {
+        setLoading(true);
+        try {
+            const newData = await getData(pagination);
+            if (newData) {
+                setPageCount(newData.total_pages);
                 setData(newData.records);
             }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
         }
-        fetchData()
-    }, [pagination])
+    };
 
+    useEffect(() => {
+        fetchData();
+    }, [pagination]);
 
+    const onDeleteItem = useCallback((id: string) => deleteProxy(id, fetchData), [pagination]);
+
+    const columns = useMemo(() => getProxyColumns({ onDeleteItem }), [onDeleteItem]);
 
     return (
         <div>
-
             <div>
                 <div>
-                    <div>
-                        <h1 className='font-normal text-xl md:text-xl mb-3 flex items-center mt-8'>
-                            <span>Proxy</span>
-                        </h1>
+                    <h1 className='font-normal text-xl md:text-xl mb-3 flex items-center mt-8'>
+                        <span>Proxy</span>
+                    </h1>
+                </div>
+                <div className="flex">
+                    <div className='relative h-9 w-full md:w-1/3 md:flex-shrink-0 mb-6'>
+                        <MagnifyingGlassIcon className='inline-block absolute ml-2 mt-1 text-gray-400' width={20} height={24} />
+                        <Input
+                            data-testid="search-input"
+                            className="appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full pl-10 focus:bg-white focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600"
+                            placeholder="Search"
+                            type="search"
+                            spellCheck="false"
+                            aria-label="Search"
+                        />
                     </div>
-                    <div className="flex">
-                        <div className='relative h-9 w-full md:w-1/3 md:flex-shrink-0 mb-6 mb-6'>
-                            <MagnifyingGlassIcon className='inline-block absolute ml-2 mt-1 text-gray-400' width={20} height={24} />
-                            <Input data-testid="search-input" className="appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800 appearance-none rounded-full h-8 pl-10 w-full focus:bg-white focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800" placeholder="Search" type="search" spellCheck="false" aria-label="Search"></Input>
-                        </div>
-                        <div className="w-full flex items-center mb-6">
-                            <div className="flex-shrink-0 ml-auto">
-                                <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreateProxy}>Create Proxy</Button>
-                            </div>
+                    <div className="w-full flex items-center mb-6">
+                        <div className="flex-shrink-0 ml-auto">
+                            <Button
+                                className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration-300 font-bold"
+                                style={{ backgroundColor: "rgb(14,165,233)" }}
+                                onClick={handleBtnCreateProxy}
+                            >
+                                Create Proxy
+                            </Button>
                         </div>
                     </div>
                 </div>
-                {loading ? (
-                    <Skeleton className="w-[100%] h-[50px] rounded-lg mt-10" />
-                ) : (
-
-                    <DataTable columns={columns} data={data} pageCount={pageCount} pagination={pagination} onSetPagination={handlePaginationChange} />
-                )}
             </div>
-
+            {loading ? (
+                <Skeleton className="w-[100%] h-[50px] rounded-lg mt-10" />
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={data}
+                    pageCount={pageCount}
+                    pagination={pagination}
+                    onSetPagination={handlePaginationChange}
+                />
+            )}
         </div>
-    )
-}
+    );
+};
 
-export default ProxyTable
+export default ProxyTable;

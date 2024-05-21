@@ -37,6 +37,7 @@ import {
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams, useRouter } from 'next/navigation'
+import BlacklistAPI from '@/apis/blacklist'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -115,6 +116,25 @@ const NewBlacklist = () => {
     async function onSubmit(values: z.infer<typeof formSchema>) {
         values.accesslist_id = accesslist_id as string;
         console.log(values);
+
+        try {
+            let res = await BlacklistAPI.newItem(values)
+            if (res.success) {
+                toast({
+                    description: "Created",
+                })
+                router.back()
+                return
+            }
+
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
+        }
     }
 
     return (

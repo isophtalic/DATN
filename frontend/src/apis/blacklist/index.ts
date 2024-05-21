@@ -1,7 +1,7 @@
 import pick from 'lodash/pick'
 import { handleRequest } from '../handle'
 import request from './request'
-import { rulesetBaseURL } from '../config'
+import { blacklistBaseURL } from '../config'
 // import { ProxyViewerEndpoint } from './config'
 import { AUTHEN_TOKEN_KEY } from '../constants/const'
 import Cookie from 'js-cookie'
@@ -13,8 +13,8 @@ const HeaderAuth = {
 }
 
 const detail = (id: string) => {
-    return handleRequest<RuleSetInterface>(
-        () => request.get(`${rulesetBaseURL}/${id}`, HeaderAuth),
+    return handleRequest<DataRuleInterface>(
+        () => request.get(`${blacklistBaseURL}/${id}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -26,7 +26,7 @@ const detail = (id: string) => {
 
 const view = () => {
     return handleRequest<any>(
-        () => request.get(`${rulesetBaseURL}`, HeaderAuth),
+        () => request.get(`${blacklistBaseURL}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data
@@ -35,10 +35,10 @@ const view = () => {
     )
 }
 
-const newItem = (input: Partial<RuleSetInterface>) => {
-    const { id, file, content, secrule_id } = pick(input, ['id', 'file', 'content', 'secrule_id'])
-    return handleRequest<RuleSetInterface>(
-        () => request.post(`${rulesetBaseURL}`, { id, file, content, secrule_id }, HeaderAuth),
+const newItem = (input: Partial<BlacklistInterface>) => {
+    const { accesslist_id, ip, status } = pick(input, ['accesslist_id', 'ip', 'status'])
+    return handleRequest<BlacklistInterface>(
+        () => request.post(`${blacklistBaseURL}`, { accesslist_id, ip, status }, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -47,15 +47,15 @@ const newItem = (input: Partial<RuleSetInterface>) => {
     )
 }
 
-const updateItem = (id: string, ruleUpdated: RuleSetInterface) => {
+const updateItem = (id: string, ruleUpdated: DataRuleInterface) => {
     return
 }
 
-const RuleAPI = {
+const BlacklistAPI = {
     detail,
     view,
     newItem,
     updateItem
 }
 
-export default RuleAPI
+export default BlacklistAPI

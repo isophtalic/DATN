@@ -28,10 +28,12 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { Textarea } from "@/components/ui/textarea"
 
 import ProxyAPI from '@/apis/proxy'
+import RuleAPI from '@/apis/ruleset'
+import { toast } from '@/components/ui/use-toast'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -55,7 +57,7 @@ interface DataPage {
 }
 
 const NewRuleSet = () => {
-    const router = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
 
 
@@ -80,7 +82,23 @@ const NewRuleSet = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         values.secrule_id = secrule_id as string
-        console.log(values)
+        try {
+            let res = await RuleAPI.newItem(values)
+            if (res.success) {
+                toast({
+                    description: "Created",
+                })
+                router.back()
+                return
+            }
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
+        }
     }
 
     const datapage: DataPage[] = [
