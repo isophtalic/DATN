@@ -1,0 +1,42 @@
+version: '3.9'
+
+services:
+  # grafana:
+  #   image: grafana/grafana:latest
+  #   container_name: grafana
+  #   ports:
+  #    - "3000:3000"
+  #   networks:
+  #      - waf-backend
+  timescaledb:
+    image: timescale/timescaledb:latest-pg15
+    container_name: timescaledb
+    volumes:
+      - dbdata:/var/lib/postgresql/data
+    ports:
+      - "${HOST:-127.0.0.1}:5432:5432"
+    environment:
+      # - POSTGRES_USER=username
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=waf
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready  -U postgres --dbname=waf" ]
+      interval: 10s
+      timeout: 1m
+      retries: 5
+    logging:
+      driver: "json-file"
+      options:
+        max-file: "5"
+        max-size: "10m"
+    networks:
+      - waf-backend
+
+volumes:
+  dbdata:
+
+
+networks:
+  waf-backend:
+    external: true

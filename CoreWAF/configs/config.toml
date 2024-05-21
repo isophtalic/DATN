@@ -1,0 +1,9 @@
+APIKEY = "aXNvcGh0YWxpYy5oZWhl"
+Kafka_Brokers = ["localhost:9092"]
+Kafka_Partition = 0
+Kafka_Password = "password"
+Kafka_User = "user"
+LogLevel = 5
+Port = "8090"
+SERVER = "http://127.0.0.1:8123"
+Target = "http://127.0.0.1:4321"
