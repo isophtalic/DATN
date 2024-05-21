@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { columns } from './columns'
+import { getColumns } from './columns'
 import { DataTable } from './data-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,6 +13,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import AccesslistAPI from '@/apis/accesslist'
+import { toast } from '@/components/ui/use-toast'
 
 async function getData(pagination: PaginationState): Promise<any> {
     let result: any[] = []
@@ -21,6 +22,25 @@ async function getData(pagination: PaginationState): Promise<any> {
         return response.data
     } catch (error) {
         console.log(error);
+    }
+}
+
+async function deleteAccesslist(id: string, refreshData: () => void) {
+    try {
+        const res = await AccesslistAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            refreshData(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
     }
 }
 
@@ -36,7 +56,6 @@ const AccesslistTable = () => {
 
     const handlePaginationChange = (pagination: PaginationState) => {
         setLoading(true);
-        // console.log("🚀 ~ handlePaginationChange ~ pagination:", pagination)
         setPagination(() => pagination)
     }
 
@@ -46,26 +65,31 @@ const AccesslistTable = () => {
         router.push("/dashboards/accesslist/new")
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
+    const fetchData = async () => {
+        setLoading(false);
+        var newData
+        try {
+            newData = await getData(pagination)
+            if (newData) {
+                setPageCount(newData.total_pages);
+                setData(newData.records);
+            }
+        } catch (error) {
+            console.log("🚀 ~ fetchData ~ error:", error)
+            return
+        } finally {
             setLoading(false);
-            var newData
-            try {
-                newData = await getData(pagination)
-                console.log("🚀 ~ fetchData ~ newData:", newData)
-            } catch (error) {
-                console.log("🚀 ~ fetchData ~ error:", error)
-                return
-            }
-
-            if (newData !== undefined) {
-                setPageCount(newData.total_pages ?? 1)
-                setData(newData.records ?? []);
-            }
         }
+    }
+
+    useEffect(() => {
+
         fetchData()
     }, [pagination])
 
+    const onDelete = useCallback((id: string) => deleteAccesslist(id, fetchData), [pagination]);
+
+    const columns = useMemo(() => getColumns({ onDelete }), [onDelete]);
 
 
     return (

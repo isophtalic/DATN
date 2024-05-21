@@ -13,8 +13,13 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import ActionsCell from "./actions_cell"
 
-export const columns: ColumnDef<SecRuleInterface>[] = [
+type SecRuleSetColumnProps = {
+    onDelete: (id: string) => void
+}
+
+export const getColumns = ({ onDelete }: SecRuleSetColumnProps): ColumnDef<SecRuleInterface>[] => [
     {
         cell: ({ row }) => {
             return (
@@ -81,24 +86,7 @@ export const columns: ColumnDef<SecRuleInterface>[] = [
         cell: ({ row }) => {
             const payment = row.original
             return (
-                <DropdownMenu>
-                    <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                            <span className="sr-only">Open menu</span>
-                            <MoreHorizontal className="h-4 w-4" />
-                        </Button>
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem
-                            onClick={() => navigator.clipboard.writeText(payment.secrule_id)}
-                        >
-                            View
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem>Delete</DropdownMenuItem>
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                <ActionsCell id={payment.secrule_id} onDeleteItem={onDelete} />
             )
         },
     },

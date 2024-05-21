@@ -72,6 +72,17 @@ const newItem = (input: Partial<SecRuleInterface>) => {
     )
 }
 
+const deleteByID = (id: string) => {
+    return handleRequest<SecRuleInterface>(
+        () => request.delete(`${secruleBaseURL}/${id}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
+
 const updateItem = () => {
     return
 }
@@ -82,7 +93,8 @@ const SecRuleAPI = {
     showRuleSets,
     showDataRule,
     newItem,
-    updateItem
+    updateItem,
+    deleteByID
 }
 
 export default SecRuleAPI

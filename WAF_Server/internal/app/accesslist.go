@@ -104,3 +104,35 @@ func (app *AccesslistHandler) FindBlacklist(c *gin.Context) {
 
 	ResponseJSON(c, "Successfully", result)
 }
+
+func (app *AccesslistHandler) DeleteByID(c *gin.Context) {
+	id := c.Param("id")
+	actor := c.MustGet("user").(model.User).Username
+
+	err := service.DeleteByID(id, actor)
+	if err != nil {
+		ResponseError(c, err)
+		return
+	}
+
+	ResponseJSON(c, "Deleted", nil)
+}
+
+func (app *AccesslistHandler) UpdateByID(c *gin.Context) {
+	id := c.Param("id")
+	actor := c.MustGet("user").(model.User).Username
+
+	var cmd model.AccessList
+	if err := c.ShouldBindJSON(&cmd); err != nil {
+		ResponseError(c, err)
+		return
+	}
+
+	err := service.UpdateByID(id, cmd, actor)
+	if err != nil {
+		ResponseError(c, err)
+		return
+	}
+
+	ResponseJSON(c, "Updated", nil)
+}

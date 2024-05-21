@@ -32,6 +32,19 @@ func DeleteByID(id, actor string) error {
 		}
 	}
 
+	data, err := persistence.Data().FindBySecRuleID(id)
+	if err != nil && err != gorm.ErrRecordNotFound {
+		return err
+	}
+
+	for _, v := range data {
+		err := persistence.Data().DeleteByID(v.DataID)
+		if err != nil {
+			multipleErr.Append(err)
+			continue
+		}
+	}
+
 	if multipleErr.ErrorOrNil() != nil {
 		return multipleErr.ErrorOrNil()
 	}

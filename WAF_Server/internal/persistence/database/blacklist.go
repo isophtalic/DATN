@@ -60,7 +60,7 @@ func (repo *PostgresBlackListProvider) DeleteByID(id string) error {
 
 func (repo *PostgresBlackListProvider) DeleteByAccesslistID(id string) error {
 	database := repo.db
-	tx := database.Model(&model.Blacklist{}).Delete(&model.Blacklist{AccessListID_FK: id})
+	tx := database.Model(&model.Blacklist{}).Where("accesslist_id = ?", id).Delete(&model.Blacklist{AccessListID_FK: id})
 
 	return tx.Error
 }

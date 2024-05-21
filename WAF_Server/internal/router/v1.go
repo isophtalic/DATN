@@ -88,6 +88,8 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	accesslistRouter.GET("", accessListHandler.List)
 	accesslistRouter.POST("", accessListHandler.CreateAccesslist)
 	accesslistRouter.GET("/:id", accessListHandler.DetailAccesslist)
+	accesslistRouter.DELETE("/:id", accessListHandler.DeleteByID)
+	accesslistRouter.PATCH("/:id", accessListHandler.UpdateByID)
 	accesslistRouter.GET("/:id/blacklist", accessListHandler.FindBlacklist)
 	accesslistRouter.GET("/:id/proxies", accessListHandler.FindProxy)
 
@@ -124,7 +126,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	dataRouter.GET("", dataHandler.List)
 	dataRouter.POST("", dataHandler.Create)
 	dataRouter.GET("/:id", dataHandler.FindByID)
-	dataRouter.POST("/:id", dataHandler.UpdateByID)
+	dataRouter.PATCH("/:id", dataHandler.UpdateByID)
 	dataRouter.DELETE("/:id", dataHandler.DeleteByID)
 
 	// action

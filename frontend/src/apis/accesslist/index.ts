@@ -92,6 +92,17 @@ const newItem = (input: Partial<AccesslistInterface>) => {
     )
 }
 
+const deleteByID = (id: string) => {
+    return handleRequest<AccesslistInterface>(
+        () => request.delete(`${accesslistBaseURL}/${id}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
+
 
 const updateItem = () => {
     return
@@ -104,6 +115,7 @@ const AccesslistAPI = {
     updateItem,
     showProxies,
     showBlacklist,
+    deleteByID,
     list
 }
 

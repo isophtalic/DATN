@@ -3,8 +3,11 @@
 import { ColumnDef } from "@tanstack/react-table"
 
 import { CheckCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
+type AccesslistColumnProps = {
+    onDelete: (id: string) => void
+}
 
-export const columns: ColumnDef<AccesslistInterface>[] = [
+export const getColumns= ({ onDelete }: AccesslistColumnProps): ColumnDef<AccesslistInterface>[] => [
     {
         cell: ({ row }) => {
             return (
@@ -49,8 +52,8 @@ export const columns: ColumnDef<AccesslistInterface>[] = [
             const payment = row.original
             return (
                 <div className="flex flex-row justify-end">
-                    <div className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
-                        <TrashIcon className='w-6 h6' />
+                    <div className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500" onClick={() => onDelete(payment.accesslist_id)}>
+                        <TrashIcon className='w-6 h6'/>
                     </div>
                     <div className="w-5"></div>
                     <div className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border  hover:border-sky-500">
