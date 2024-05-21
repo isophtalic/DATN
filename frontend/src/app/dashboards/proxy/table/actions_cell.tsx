@@ -16,24 +16,7 @@ import ProxyAPI from "@/apis/proxy"
 import { toast } from "@/components/ui/use-toast"
 import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
-const deleteProxy = async (id: string, router: AppRouterInstance) => {
-    try {
-        const res = await ProxyAPI.deleteByID(id)
-        if (res.success) {
-            toast({
-                description: "Delete Successfully"
-            })
-            router.push("/dashboards/proxy")
-        } else {
-            throw new Error(res.message)
-        }
-    } catch (err) {
-        toast({
-            variant: "destructive",
-            description: `${err}`
-        })
-    }
-}
+
 interface ActionsCellProps {
     proxy: ProxyViewer;
     onDeleteItem: (id: string) => void
