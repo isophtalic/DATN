@@ -4,11 +4,13 @@ import { ColumnDef } from "@tanstack/react-table"
 
 import { CheckCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
 import { BlacklistStatus, RuleStatus } from "@/store/constants/const"
+import ActionsCell from "./actions_cell"
 type RuleSetColumnProps = {
+    id: string,
     onDelete: (id: string) => void
 }
 
-export const getColumns = ({ onDelete }: RuleSetColumnProps): ColumnDef<RuleSetInterface>[] => [
+export const getColumns = ({ id, onDelete }: RuleSetColumnProps): ColumnDef<RuleSetInterface>[] => [
     {
         cell: ({ row }) => {
             return (
@@ -80,15 +82,7 @@ export const getColumns = ({ onDelete }: RuleSetColumnProps): ColumnDef<RuleSetI
         cell: ({ row }) => {
             const payment = row.original
             return (
-                <div className="flex flex-row justify-end">
-                    <div onClick={() => onDelete(payment.rule_id)} className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
-                        <TrashIcon className='w-6 h6' />
-                    </div>
-                    <div className="w-5"></div>
-                    <div className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border  hover:border-sky-500">
-                        <PencilSquareIcon className='w-6 h6' />
-                    </div>
-                </div>
+                <ActionsCell id={id} rule_id={payment.rule_id} onDelete={onDelete} />
             )
         },
     }

@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { columns } from './columns'
+import { getColumns } from './columns'
 import { DataTable } from './data-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,14 +13,35 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import SecRuleAPI from '@/apis/secruleset'
+import DataRuleAPI from '@/apis/datarule'
+import { toast } from '@/components/ui/use-toast'
 
-async function getData(id: string): Promise<any> {
+async function getData(id: string, pagination: PaginationState): Promise<any> {
     let result: any[] = []
     try {
-        const response = await SecRuleAPI.showDataRule(id)
+        const response = await SecRuleAPI.showDataRule(id, pagination)
         return response.data
     } catch (error) {
         console.log(error);
+    }
+}
+
+async function deleteItem(id: string, refreshData: () => void) {
+    try {
+        const res = await DataRuleAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            refreshData(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
     }
 }
 
@@ -28,6 +49,7 @@ const DataRuleTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
     const [data, setData] = useState<DataRuleInterface[]>([]);
+    const [pageCount, setPageCount] = useState<number>(1);
     // const initData = await getData(initialStatePagination)
 
     // let dataRef = useRef<ProxyViewer[]>([])
@@ -48,24 +70,31 @@ const DataRuleTable = () => {
         router.push(`/dashboards/security_rule_sets/${secrule_id}/datarule/new`)
     }
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(false);
-            var newData
-            try {
-                newData = await getData(secrule_id)
-                console.log("🚀 ~ fetchData ~ newData:", newData)
-            } catch (error) {
-                console.log("🚀 ~ fetchData ~ error:", error)
-                return
+    const fetchData = async () => {
+        setLoading(false);
+        var newData
+        try {
+            newData = await getData(secrule_id, pagination)
+            if (newData) {
+                setPageCount(newData.total_pages ?? 1);
+                setData(newData.records ?? []);
             }
-
-            if (newData !== undefined)
-                setData(newData);
+        } catch (error) {
+            console.log("🚀 ~ fetchData ~ error:", error)
+            return
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
+
         fetchData()
     }, [pagination])
 
+    const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);
+
+    const columns = useMemo(() => getColumns({ id: secrule_id, onDelete }), [onDelete]);
 
 
     return (
@@ -100,7 +129,7 @@ const DataRuleTable = () => {
                     </div>
                 ) : (
 
-                    <DataTable columns={columns} data={data} pagination={pagination} secrule_id={secrule_id} onSetPagination={handlePaginationChange} />
+                    <DataTable columns={columns} data={data} pageCount={pageCount} pagination={pagination} secrule_id={secrule_id} onSetPagination={handlePaginationChange} />
                 )}
             </div>
 

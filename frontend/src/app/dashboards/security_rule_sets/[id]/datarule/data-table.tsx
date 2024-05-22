@@ -1,5 +1,5 @@
 "use client"
-import React, { useId } from "react"
+import React, { useEffect, useId } from "react"
 import { useRouter } from "next/navigation"
 
 import {
@@ -34,6 +34,7 @@ interface DataTableProps<DataRuleInterface, TValue> {
     data: DataRuleInterface[],
     secrule_id: string,
     pagination: PaginationState,
+    pageCount: number
     onSetPagination: (pagination: PaginationState) => void
 }
 
@@ -42,6 +43,7 @@ export function DataTable<DataRuleInterface, TValue>({
     data,
     secrule_id,
     pagination,
+    pageCount,
     onSetPagination,
 }: DataTableProps<DataRuleInterface, TValue>) {
 
@@ -63,8 +65,17 @@ export function DataTable<DataRuleInterface, TValue>({
             sorting,
             pagination: pagination,
         },
+        pageCount,
+        manualPagination: true,
     })
 
+    useEffect(() => {
+        table.setPageCount(pageCount);
+        table.setOptions((prev) => ({
+            ...prev,
+            data,
+        }));
+    }, [data, pageCount, table]);
 
     const router = useRouter()
 
@@ -135,9 +146,9 @@ export function DataTable<DataRuleInterface, TValue>({
                             table?.getRowModel().rows.map((row, index) => (
                                 <TableRow
                                     key={row.id}
-                                    onClick={() => viewDetail(secrule_id, data[index].data_id)}
+                                    // onClick={() => viewDetail(secrule_id, data[index].data_id)}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="cursor-pointer hover:bg-slate-200"
+                                    className="hover:bg-slate-200"
                                 >
                                     {row.getVisibleCells().map((cell) => {
                                         return (

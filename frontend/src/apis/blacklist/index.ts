@@ -47,15 +47,27 @@ const newItem = (input: Partial<BlacklistInterface>) => {
     )
 }
 
-const updateItem = (id: string, ruleUpdated: DataRuleInterface) => {
+const updateItem = (id: string, ruleUpdated: BlacklistInterface) => {
     return
+}
+
+const deleteByID = (id: string) => {
+    return handleRequest<BlacklistInterface>(
+        () => request.delete(`${blacklistBaseURL}/${id}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const BlacklistAPI = {
     detail,
     view,
     newItem,
-    updateItem
+    updateItem,
+    deleteByID
 }
 
 export default BlacklistAPI

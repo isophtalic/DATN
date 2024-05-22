@@ -96,6 +96,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	// blacklist
 	blacklistRouter := v1.Group("/blacklist")
 	blacklistRouter.POST("", accessListHandler.CreateBlackist)
+	blacklistRouter.DELETE("", accessListHandler.DeleteByID)
 
 	// desttination
 	destRouter := v1.Group("/destination")

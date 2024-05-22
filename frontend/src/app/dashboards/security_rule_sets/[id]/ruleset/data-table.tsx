@@ -146,9 +146,9 @@ export function DataTable<RuleSetInterface, TValue>({
                             table?.getRowModel().rows.map((row, index) => (
                                 <TableRow
                                     key={row.id}
-                                    onClick={() => viewDetail(secrule_id, data[index].rule_id)}
+                                    // onClick={() => viewDetail(secrule_id, data[index].rule_id)}
                                     data-state={row.getIsSelected() && "selected"}
-                                    className="cursor-pointer hover:bg-slate-200"
+                                    className="hover:bg-slate-200"
                                 >
                                     {row.getVisibleCells().map((cell) => {
                                         return (
