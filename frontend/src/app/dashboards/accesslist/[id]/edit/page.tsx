@@ -30,7 +30,7 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import AccesslistAPI from '@/apis/accesslist'
 // TODO: fix edit page accesslist
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
@@ -88,7 +88,8 @@ const getPageData = (data: AccesslistInterface): DataPage[] => {
 // interface Rows extends Array<ItemRow> { }
 
 const ProxyEditor = () => {
-    const router = useParams()
+    const param = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
     const [data, setData] = useState<AccesslistInterface>({
         accesslist_id: "",
@@ -96,7 +97,7 @@ const ProxyEditor = () => {
         updated_at: ""
     });
 
-    let idAccesslist = router.id
+    let idAccesslist = param.id
     if (Array.isArray(idAccesslist)) {
         idAccesslist = idAccesslist[0]
     }
@@ -164,7 +165,25 @@ const ProxyEditor = () => {
     const { formState: { errors } } = form
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        var itemUpdated: AccesslistInterface = {
+            accesslist_id: idAccesslist as string,
+            name: values.name,
+            updated_at: undefined,
+        }
+        try {
+            let res = await AccesslistAPI.updateItem(idAccesslist as string, itemUpdated)
+            if (res.success) {
+                toast({
+                    description: "Updated",
+                })
+                router.back()
+                return
+            }
+
+            throw res.message
+        } catch (error) {
+
+        }
     }
 
 
@@ -212,7 +231,6 @@ const ProxyEditor = () => {
                                                 <div className='flex flex-auto truncate items-center'>
                                                     <h1 className='font-normal text-xl md:text-xl'>{e.title}</h1>
                                                 </div>
-                                                {e.icon}
                                             </div>
                                             <div className='bg-white dark:bg-gray-800 rounded-lg shadow mt-3 py-2 px-6 divide-y divide-gray-100 dark:divide-gray-700'>
                                                 {e.rows.map((element, index) => {

@@ -52,7 +52,7 @@ func (repo *PostgresAccessListProvider) List(pgn *pagination.Pagination[model.Ac
 func (repo *PostgresAccessListProvider) UpdateByID(id string, al model.AccessList) error {
 	db := repo.db
 
-	tx := db.Where(&model.AccessList{AccessListID: id}).Select("blacklist", "updated_at").Updates(&al)
+	tx := db.Where(&model.AccessList{AccessListID: id}).Select("name", "updated_at").Updates(&al)
 	return tx.Error
 }
 

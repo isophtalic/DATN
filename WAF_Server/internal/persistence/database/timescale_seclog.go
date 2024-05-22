@@ -37,7 +37,7 @@ func (repo *TimescaleSeclogProvider) List(pgn *pagination.Pagination[timescale_m
 	db := repo.db
 	results := make([]timescale_model.SecLog, 0)
 
-	tx := db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Find(&results)
+	tx := db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
 	pgn.Records = results
 
 	if tx.Error != nil {

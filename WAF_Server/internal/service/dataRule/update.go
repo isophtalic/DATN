@@ -14,10 +14,6 @@ func UpdateByID(id string, data model.Data, actor string) error {
 		return fmt.Errorf("invalid data")
 	}
 
-	if current.Name != data.Name {
-		return fmt.Errorf("should create new data instead update")
-	}
-
 	data.UpdatedAt = time.Now()
 	err = persistence.Data().UpdateByID(data)
 	if err != nil {

@@ -167,9 +167,6 @@ const ProxyEditor = () => {
             title: `Proxy Update: ${data.source.hostname}`,
             icon: <div className='ml-auto flex items-center'>
                 <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
-                    <TrashIcon className="w-7 h-7 " />
-                </div>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
                     <PencilSquareIcon className="w-7 h-7" />
                 </div>
             </div>,
@@ -365,7 +362,7 @@ const ProxyEditor = () => {
             let res = await ProxyAPI.updateItem(data.proxy_id, proxyUpdated)
             if (res.success) {
                 toast({
-                    description: "Created",
+                    description: "Updated",
                 })
                 return
             }

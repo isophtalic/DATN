@@ -73,12 +73,17 @@ const DetailPage = ({ data, action_id }: DetailPageProps) => {
                                                 )
                                                 // <span>{element.value}</span>
                                             ) : (
-                                                element.key === "Original" ? (
+                                                element.key === "Original" && data.name !== "update" ? (
                                                     <MinusIcon className='w-10' />
                                                 ) : (
-                                                    <span className='text-gray-600'>
-                                                        {element.value}
-                                                    </span>
+                                                    element.key === "Original" && data.name === "update" ? (
+                                                        element.value && <JsonViewer data={JSON.parse(element.value)} />
+
+                                                    ) : (
+                                                        <span className='text-gray-600'>
+                                                            {element.value}
+                                                        </span>
+                                                    )
                                                 )
                                                 // <span className='text-gray-600'>
                                                 /* {element.value} */

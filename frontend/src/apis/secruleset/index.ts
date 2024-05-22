@@ -92,8 +92,15 @@ const deleteByID = (id: string) => {
     )
 }
 
-const updateItem = () => {
-    return
+const updateItem = (id: string, input: SecRuleInterface) => {
+    return handleRequest<SecRuleInterface>(
+        () => request.patch(`${secruleBaseURL}/${id}`, input, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const SecRuleAPI = {

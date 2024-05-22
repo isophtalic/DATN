@@ -47,8 +47,15 @@ const newItem = (input: Partial<DataRuleInterface>) => {
     )
 }
 
-const updateItem = (id: string, ruleUpdated: DataRuleInterface) => {
-    return
+const updateItem = (id: string, input: DataRuleInterface) => {
+    return handleRequest<DataRuleInterface>(
+        () => request.patch(`${dataruleBaseURL}/${id}`, input, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const deleteByID = (id: string) => {

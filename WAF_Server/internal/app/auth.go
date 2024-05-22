@@ -93,16 +93,26 @@ func (*UserHandler) ListUser(c *gin.Context) {
 	ResponseJSON(c, "Successfully", users)
 }
 
-func (*UserHandler) ResetPassword(c *gin.Context) {
+type ChangePass struct {
+	OldPass string `json:"oldpass"`
+	NewPass string `json:"newpass"`
+}
+
+func (*UserHandler) ChangePassword(c *gin.Context) {
 	actor := c.MustGet("user").(model.User)
 	if actor.Role != 0 {
 		ResponseError(c, ProhibitionError{Message: "Action not allowed"})
 		return
 	}
+	var cmd ChangePass
+	if err := c.ShouldBindJSON(&cmd); err != nil {
+		ResponseError(c, err)
+		return
+	}
 
 	id := c.Param("id")
 
-	err := service.ResetPassword(id)
+	err := service.ChangePassword(id, cmd, actor.Username)
 	if err != nil {
 		ResponseError(c, fmt.Errorf("can't reset password"))
 		return

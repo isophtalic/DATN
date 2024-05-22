@@ -45,6 +45,25 @@ async function deleteItem(id: string, refreshData: () => void) {
     }
 }
 
+async function updateItem(id: string, input: BlacklistInterface, refreshData: () => void) {
+    try {
+        const res = await BlacklistAPI.updateItem(id, input);
+        if (res.success) {
+            toast({
+                description: "Update Successfully",
+            });
+            refreshData(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
+    }
+}
+
 const BlacklistTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
@@ -93,8 +112,9 @@ const BlacklistTable = () => {
     }, [pagination, accesslist_id])
 
     const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);
+    const onUpdate = useCallback((id: string, input: BlacklistInterface) => updateItem(id, input, fetchData), [pagination]);
 
-    const columns = useMemo(() => getColumns({ id: accesslist_id, onDelete }), [onDelete]);
+    const columns = useMemo(() => getColumns({ id: accesslist_id, onDelete, onUpdate }), [onDelete]);
 
 
     return (

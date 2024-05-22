@@ -22,6 +22,11 @@ declare global {
         login: () => void;
         update: (user: UserInput) => void;
     }
+
+    type ChangePassword = {
+        oldpass: string
+        newpass: string
+    }
 }
 
 export { };

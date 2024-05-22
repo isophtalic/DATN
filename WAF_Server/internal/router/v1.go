@@ -59,7 +59,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	userRouter := v1.Group("/user")
 	userRouter.GET("", userHandler.ListUser)
 	userRouter.POST("", userHandler.CreateAccount)
-	userRouter.POST("/:id/reset-password", userHandler.ResetPassword)
+	userRouter.POST("/:id/change-password", userHandler.ChangePassword)
 	userRouter.POST("/:id/delete", userHandler.DeleteByID)
 
 	// proxy
@@ -96,7 +96,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	// blacklist
 	blacklistRouter := v1.Group("/blacklist")
 	blacklistRouter.POST("", accessListHandler.CreateBlackist)
-	blacklistRouter.DELETE("", accessListHandler.DeleteByID)
+	blacklistRouter.PATCH("/:id", accessListHandler.UpdateBlacklistByID)
 
 	// desttination
 	destRouter := v1.Group("/destination")

@@ -43,7 +43,7 @@ const view = (pagination: PaginationState) => {
 
 const newItem = (input: UserInput) => {
     const { username, password, role } = pick(input, ['username', 'password', 'role'])
-    return handleRequest<AccesslistInterface>(
+    return handleRequest<UserInput>(
         () => request.post(`${userBaseURL}`, { username, password, role }, HeaderAuth),
         r => {
             return {
@@ -53,17 +53,34 @@ const newItem = (input: UserInput) => {
     )
 }
 
+const changePassword = (id: string, input: ChangePassword) => {
+    return handleRequest<ChangePassword>(
+        () => request.post(`${userBaseURL}/${id}/change-password`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
 
-const updateItem = () => {
-    return
+const deleteByID = (id: string) => {
+    return handleRequest<UserInput>(
+        () => request.delete(`${userBaseURL}/${id}/delete`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const UserAPI = {
     detail,
     view,
     newItem,
-    updateItem,
-
+    deleteByID,
+    changePassword
 }
 
 export default UserAPI

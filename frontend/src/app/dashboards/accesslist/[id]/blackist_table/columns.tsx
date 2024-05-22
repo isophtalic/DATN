@@ -22,9 +22,10 @@ import ActionsCell from "./actions_cell"
 type ColumnProps = {
     id: string,
     onDelete: (id: string) => void
+    onUpdate: (id: string, input: BlacklistInterface) => void
 }
 
-export const getColumns = ({ id, onDelete }: ColumnProps): ColumnDef<BlacklistInterface>[] => [
+export const getColumns = ({ id, onDelete, onUpdate }: ColumnProps): ColumnDef<BlacklistInterface>[] => [
     {
         cell: ({ row }) => {
             return (
@@ -60,7 +61,7 @@ export const getColumns = ({ id, onDelete }: ColumnProps): ColumnDef<BlacklistIn
         cell: ({ row }) => {
             const payment = row.original
             return (
-                <ActionsCell blacklist={payment} id={id} onDelete={onDelete} />
+                <ActionsCell blacklist={payment} id={id} onDelete={onDelete} onUpdate={onUpdate} />
             )
         },
     }

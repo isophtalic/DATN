@@ -136,3 +136,22 @@ func (app *AccesslistHandler) UpdateByID(c *gin.Context) {
 
 	ResponseJSON(c, "Updated", nil)
 }
+
+func (app *AccesslistHandler) UpdateBlacklistByID(c *gin.Context) {
+	id := c.Param("id")
+	var cmd model.Blacklist
+	if err := c.ShouldBindJSON(&cmd); err != nil {
+		ResponseError(c, err)
+		return
+	}
+
+	actor := c.MustGet("user").(model.User).Username
+
+	err := app.ServiceBlacklist.UpdateByID(id, cmd, actor)
+	if err != nil {
+		ResponseError(c, err)
+		return
+	}
+
+	ResponseJSON(c, "Updated", nil)
+}

@@ -1,7 +1,7 @@
 'use client'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { columns } from './columns'
+import { getColumns } from './columns'
 import { DataTable } from './data-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -13,6 +13,7 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import UserAPI from '@/apis/users'
+import { toast } from '@/components/ui/use-toast'
 
 async function getData(pagination: PaginationState): Promise<any> {
     let result: any[] = []
@@ -21,6 +22,25 @@ async function getData(pagination: PaginationState): Promise<any> {
         return response.data
     } catch (error) {
         console.log(error);
+    }
+}
+
+async function deleteItem(id: string, refreshData: () => void) {
+    try {
+        const res = await UserAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            refreshData(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
     }
 }
 
@@ -42,25 +62,31 @@ const UserTable = () => {
 
     const router = useRouter()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(false);
-            var newData
-            try {
-                newData = await getData(pagination)
-                console.log("🚀 ~ fetchData ~ newData:", newData)
-            } catch (error) {
-                console.log("🚀 ~ fetchData ~ error:", error)
-                return
-            }
 
-            if (newData !== undefined) {
-                setPageCount(newData.total_pages)
+    const fetchData = async () => {
+        setLoading(false);
+        var newData
+        try {
+            newData = await getData(pagination)
+            if (newData) {
+                setPageCount(newData.total_pages);
                 setData(newData.records);
             }
+        } catch (error) {
+            console.log("🚀 ~ fetchData ~ error:", error)
+            return
+        } finally {
+            setLoading(false);
         }
+    }
+
+    useEffect(() => {
         fetchData()
     }, [pagination])
+
+    const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);
+
+    const columns = useMemo(() => getColumns({ onDelete }), [onDelete]);
 
 
 

@@ -15,11 +15,11 @@ const ActionsCell = ({ id, rule_id, onDelete }: ActionsCellProps) => {
     }
     return (
         <div className="flex flex-row justify-end">
-            <div onClick={() => onDelete(rule_id)} className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
+            <div onClick={() => onDelete(rule_id)} className="w-10 cursor-pointer h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
                 <TrashIcon className='w-6 h6' />
             </div>
             <div className="w-5"></div>
-            <div onClick={() => viewDetail(id, rule_id)} className="w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border  hover:border-sky-500">
+            <div onClick={() => viewDetail(id, rule_id)} className="w-10 cursor-pointer h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border  hover:border-sky-500">
                 <PencilSquareIcon className='w-6 h6' />
             </div>
         </div>

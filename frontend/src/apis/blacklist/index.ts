@@ -47,8 +47,15 @@ const newItem = (input: Partial<BlacklistInterface>) => {
     )
 }
 
-const updateItem = (id: string, ruleUpdated: BlacklistInterface) => {
-    return
+const updateItem = (id: string, input: BlacklistInterface) => {
+    return handleRequest(
+        () => request.patch(`${blacklistBaseURL}/${id}`, input, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const deleteByID = (id: string) => {

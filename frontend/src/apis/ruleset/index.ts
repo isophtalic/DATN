@@ -47,8 +47,15 @@ const newItem = (input: Partial<RuleSetInterface>) => {
     )
 }
 
-const updateItem = (id: string, ruleUpdated: RuleSetInterface) => {
-    return
+const updateItem = (id: string, input: RuleSetInterface) => {
+    return handleRequest<RuleSetInterface>(
+        () => request.patch(`${rulesetBaseURL}/${id}`, input, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const deleteByID = (id: string) => {

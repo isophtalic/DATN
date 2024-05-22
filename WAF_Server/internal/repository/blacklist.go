@@ -14,4 +14,5 @@ type BlacklistReposiory interface {
 	FindByAccesslistID(al_id string, pgn *pagination.Pagination[model.Blacklist]) (*pagination.Pagination[model.Blacklist], error)
 	FindByAccesslistAndIP(al_id, ip string) (model.Blacklist, error)
 	FindByIP(ip string) (model.Blacklist, error)
+	FindByID(ip string) (model.Blacklist, error)
 }

@@ -38,3 +38,8 @@ func (user *User) Valid() error {
 
 	return nil
 }
+
+type ChangePass struct {
+	OldPass string `json:"oldpass"`
+	NewPass string `json:"newpass"`
+}

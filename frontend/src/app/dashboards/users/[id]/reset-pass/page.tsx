@@ -29,28 +29,32 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useParams } from 'next/navigation'
+import UserAPI from '@/apis/users'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
 const formSchema = z.object({
-    password: z.string().min(2, {
+    current_password: z.string().min(2, {
+        message: "Password must be at least 2 characters.",
+    }),
+    new_password: z.string().min(2, {
         message: "Password must be at least 2 characters.",
     }),
     confirmPassword: z.string().min(2, {
         message: "Password must be at least 2 characters.",
     }),
-}).superRefine(({ confirmPassword, password }, ctx) => {
-    if (confirmPassword !== password) {
+}).superRefine(({ confirmPassword, new_password }, ctx) => {
+    if (confirmPassword !== new_password) {
         ctx.addIssue({
             code: "custom",
-            message: "The passwords did not match"
+            message: "The confirm passwords did not match"
         });
     }
 })
 
 interface ItemRow {
     key: any,
-    field: "password" | "confirmPassword",
+    field: "new_password" | "confirmPassword" | "current_password",
     value?: any
 }
 
@@ -67,15 +71,20 @@ const NewProxy = () => {
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),
         defaultValues: {
-            password: "",
+            current_password: "",
+            new_password: "",
             confirmPassword: "",
         },
     })
-
+    var idUser = param["id"]
     const { formState: { errors } } = form
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        var input: ChangePassword = {
+            oldpass: values.current_password,
+            newpass: values.new_password
+        }
+        UserAPI.changePassword(idUser as string, input)
     }
 
     let userid = param.id as string
@@ -86,7 +95,11 @@ const NewProxy = () => {
             rows: [
                 {
                     key: "Password",
-                    field: "password",
+                    field: "current_password",
+                },
+                {
+                    key: "New Password",
+                    field: "new_password",
                 },
                 {
                     key: "Confirm password",

@@ -12,9 +12,29 @@ import { Button } from '@/components/ui/button'
 import { TrashIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { DateTime } from '@/lib/datetime';
 import DataRuleAPI from '@/apis/datarule'
+import { toast } from '@/components/ui/use-toast'
 
 const updateRule = (id: string, ruleUpdated: DataRuleInterface) => {
-    DataRuleAPI.updateItem(id, ruleUpdated)
+    DataRuleAPI.updateItem(id, ruleUpdated).then(res => {
+        if (res.success) {
+            toast({
+                description: "Updated",
+            })
+            return
+        }
+
+        toast({
+            variant: "destructive",
+            title: "Somethinmg went wrong",
+            description: `${res.message}`
+        })
+    }).catch(error => {
+        toast({
+            variant: "destructive",
+            title: "Somethinmg went wrong",
+            description: `${error}`
+        })
+    })
 }
 
 const DetailPage = ({ data, dataid }: DetailPageProps) => {
@@ -42,9 +62,11 @@ const DetailPage = ({ data, dataid }: DetailPageProps) => {
         setDescription(descriptionTMP)
         let ruleUpdated = {
             ...data,
-            content: content,
-            description: description,
+            name: nameTMP.trim() ? nameTMP : defaultName,
+            content: contentTMP.trim() ? contentTMP : defaultContent,
+            description: descriptionTMP.trim() ? descriptionTMP : defaultName,
         }
+        console.log("🚀 ~ handleBtnEdited ~ ruleUpdated:", ruleUpdated)
         // TODO: add API update
         updateRule(dataid, ruleUpdated)
         setEdit(false)
@@ -70,12 +92,12 @@ const DetailPage = ({ data, dataid }: DetailPageProps) => {
         {
             title: `Detail Data: ${data.name}`,
             icon: <div className='ml-auto flex items-center'>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
+                <div className='p-4 cursor-pointer rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
                     {/* TODO: delete rule*/}
                     <TrashIcon className="w-7 h-7 " />
                 </div>
                 {/* <div > */}
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }} onClick={handleEdit} >
+                <div className='p-4 cursor-pointer rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }} onClick={handleEdit} >
                     <PencilSquareIcon className="w-7 h-7" />
                 </div>
                 {/* </div> */}

@@ -39,3 +39,17 @@ func (*ServiceBlacklistHandler) List(al_id string, c *gin.Context) (*pagination.
 
 	return persistence.Blacklist().FindByAccesslistID(al_id, pgn)
 }
+
+func (*ServiceBlacklistHandler) UpdateByID(bl_id string, input model.Blacklist, actor string) error {
+	src, err := persistence.Blacklist().FindByID(bl_id)
+	if err != nil {
+		return fmt.Errorf("invalid blacklist")
+	}
+
+	err = persistence.Blacklist().UpdateByID(bl_id, input)
+	if err != nil {
+		return err
+	}
+
+	return service.CreateActions(src, input, bl_id, "Blacklist", actor, model.ACTION_CREATE)
+}

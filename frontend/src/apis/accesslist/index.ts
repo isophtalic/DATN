@@ -104,8 +104,15 @@ const deleteByID = (id: string) => {
 }
 
 
-const updateItem = () => {
-    return
+const updateItem = (id: string, input: AccesslistInterface) => {
+    return handleRequest(
+        () => request.patch(`${accesslistBaseURL}/${id}`, input, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
 }
 
 const AccesslistAPI = {

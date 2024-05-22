@@ -85,7 +85,33 @@ const SecRuleUpdate = () => {
     const { formState: { errors } } = form
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
-        console.log(values)
+        var updatedItem: SecRuleInterface = {
+            secrule_id: data.secrule_id,
+            created_at: data.created_at,
+            updated_at: undefined,
+            name: values.name,
+            debug_log_level: values.debug_log_level
+        }
+        console.log("🚀 ~ onSubmit ~ updatedItem:", updatedItem)
+
+        try {
+            let res = await SecRuleAPI.updateItem(data.secrule_id, updatedItem)
+            if (res.success) {
+                toast({
+                    description: "Updated",
+                })
+                router.back()
+                return
+            }
+
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
+        }
     }
 
     const datapage: DataPage[] = [
@@ -225,7 +251,7 @@ const SecRuleUpdate = () => {
                             })}
                             <div className='flex flex-row-reverse gap-10'>
                                 <div >
-                                    <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(14,165,233)" }} type="submit">Create Secruleset</Button>
+                                    <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(14,165,233)" }} type="submit">Update Secruleset</Button>
                                 </div>
                                 <div>
                                     <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button"

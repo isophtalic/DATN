@@ -114,3 +114,19 @@ func (repo *PostgresBlackListProvider) FindByIP(ip string) (model.Blacklist, err
 
 	return result, tx.Error
 }
+
+func (repo *PostgresBlackListProvider) FindByID(id string) (model.Blacklist, error) {
+	database := repo.db
+
+	var result model.Blacklist
+	tx := database.Where(&model.Blacklist{ID: id}).Find(&result)
+	if tx.Error != nil {
+		return model.Blacklist{}, tx.Error
+	}
+
+	if tx.RowsAffected == 0 {
+		return model.Blacklist{}, fmt.Errorf("not found")
+	}
+
+	return result, tx.Error
+}

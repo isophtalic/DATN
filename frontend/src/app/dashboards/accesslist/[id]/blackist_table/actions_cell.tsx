@@ -12,18 +12,22 @@ import {
 import { useRouter } from "next/navigation";
 import { CheckCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
 
+const getUpdateItem = (blacklist: BlacklistInterface) => {
+    return {
+        ...blacklist,
+        status: blacklist.status === 0 ? 1 : 0,
+    }
+}
 
 interface ActionsCellProps {
     blacklist: BlacklistInterface
     id: string;
     onDelete: (id: string) => void
+    onUpdate: (id: string, input: BlacklistInterface) => void
 }
-const ActionsCell = ({ id, blacklist, onDelete }: ActionsCellProps) => {
+const ActionsCell = ({ id, blacklist, onDelete, onUpdate }: ActionsCellProps) => {
     return (
         <div className="flex flex-row justify-end">
-            <div onClick={() => onDelete(blacklist.id)} className="w-10 h-10 flex justify-center cursor-pointer rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
-                <TrashIcon className='w-6 h6' />
-            </div>
             <div className="w-5"></div>
             <div className="">
                 <DropdownMenu>
@@ -35,7 +39,7 @@ const ActionsCell = ({ id, blacklist, onDelete }: ActionsCellProps) => {
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                         <DropdownMenuLabel>Change Status</DropdownMenuLabel>
-                        <DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => onUpdate(blacklist.id, getUpdateItem(blacklist))} className='cursor-pointer'>
                             {blacklist.status === 0 ? "Deny" : "Allow"}
                         </DropdownMenuItem>
                         <DropdownMenuSeparator />
