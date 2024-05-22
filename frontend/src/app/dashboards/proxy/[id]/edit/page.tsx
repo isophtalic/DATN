@@ -16,6 +16,13 @@ import { Input } from "@/components/ui/input"
 import { Button } from '@/components/ui/button'
 import { toast } from "@/components/ui/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
 
 
 import {
@@ -30,8 +37,11 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import ProxyAPI from '@/apis/proxy'
+import { PaginationState } from '@tanstack/react-table'
+import AccesslistAPI from '@/apis/accesslist'
+import SecRuleAPI from '@/apis/secruleset'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -73,99 +83,44 @@ const fetchDataProxyDetail = async (id: string) => {
     }
 }
 
-const getPageData = (data: ProxyViewerDetail): DataPage[] => {
-    return [
-        {
-            title: `Proxy Detail: ${data.source.hostname}`,
-            icon: <div className='ml-auto flex items-center'>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
-                    <TrashIcon className="w-7 h-7 " />
-                </div>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
-                    <PencilSquareIcon className="w-7 h-7" />
-                </div>
-            </div>,
-            rows: [
-                {
-                    key: "Status",
-                    field: "scheme",
-                    value: `${data.status}`
-                },
-                {
-                    key: "Cache",
-                    field: "scheme",
-                    value: `${data.cache}`
-                },
-            ]
-        },
-        {
-            title: `Source`,
-            rows: [
-                {
-                    field: "hostname",
-                    key: "Hostname",
-                    value: `${data.source.hostname}`
-                },
-                {
-                    field: "port",
-                    key: "Port",
-                    value: `${data.source.port}`
-                },
-            ]
-        },
-        {
-            title: `Destination`,
-            rows: [
-                {
-                    field: "scheme",
-                    key: "Forward Scheme",
-                    value: `${data.destination.scheme}`
-                },
-                {
-                    field: "ip",
-                    key: "Forward Hostname / IP",
-                    value: `${data.destination.ip}`
-                },
-                {
-                    field: "forward_port",
-                    key: "Forward Port",
-                    value: `${data.destination.forward_port}`
-                },
-            ]
-        },
-        {
-            title: "Security",
-            rows: [
-                {
-                    field: "rule",
-                    key: "Rule Set",
-                    value: `${data.secrule.name}`
-                },
-                {
-                    field: "debug_log_level",
-                    key: "Debug Log Level",
-                    value: `${data.secrule.debug_log_level}`
-                },
-            ]
-        },
-        {
-            title: "Access",
-            rows: [
-                {
-                    field: "accesslist",
-                    key: "Access List",
-                    value: `${data.accesslist.name}`
-                }
-            ]
-        }
-    ]
-}
 
 // interface Rows extends Array<ItemRow> { }
 
+async function getAccesslist(): Promise<any> {
+    let result: any[] = []
+    var pagination: PaginationState = {
+        pageIndex: 0,
+        pageSize: 100,
+    }
+    try {
+        const response = await AccesslistAPI.list(pagination)
+        return response.data
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+async function getSecRule(): Promise<any> {
+    let result: any[] = []
+    var pagination: PaginationState = {
+        pageIndex: 0,
+        pageSize: 100,
+    }
+
+    try {
+        const response = await SecRuleAPI.view(pagination)
+        return response.data
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const ProxyEditor = () => {
-    const router = useParams()
+    const param = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
+    const [selectAccesslist, setSelectAccesslist] = useState<any[]>([])
+    const [selectSecRule, setSelectSecRule] = useState<any[]>([])
     const [data, setData] = useState<ProxyViewerDetail>({
         proxy_id: "",
         status: true,
@@ -293,7 +248,7 @@ const ProxyEditor = () => {
         }
     ]
 
-    let idProxy = router.id
+    let idProxy = param.id
     if (Array.isArray(idProxy)) {
         idProxy = idProxy[0]
     }
@@ -329,6 +284,32 @@ const ProxyEditor = () => {
                         debug_log_level: proxyDetail.secrule.debug_log_level,
                         accesslist: proxyDetail.accesslist.name
                     }); // Update data with the fetched data
+
+                    var dataAccesslist
+                    try {
+                        dataAccesslist = await getAccesslist()
+                        console.log("🚀 ~ fetchData ~ dataAccesslist:", dataAccesslist)
+                        setLoading(false);
+                    } catch (error) {
+                        console.log("🚀 ~ fetchData ~ error:", error)
+                        return
+                    }
+
+                    var dataSecRule
+                    try {
+                        dataSecRule = await getSecRule()
+                        console.log("🚀 ~ fetchData ~ dataSecRule:", dataSecRule)
+                        setLoading(false);
+                    } catch (error) {
+                        console.log("🚀 ~ fetchData ~ error:", error)
+                        return
+                    }
+
+                    if (dataAccesslist !== undefined)
+                        setSelectAccesslist(dataAccesslist.records ?? []);
+
+                    if (dataSecRule !== undefined)
+                        setSelectSecRule(dataSecRule.records ?? []);
                 }
             } catch (error) {
                 toast({
@@ -352,20 +333,50 @@ const ProxyEditor = () => {
 
     async function onSubmit(values: z.infer<typeof formSchema>) {
         console.log(values)
-        if (values.hostname !== data.source.hostname || values.port !== data.source.port) {
-            // update source
+        var proxyUpdated: ProxyViewerDetail = {
+            proxy_id: data.proxy_id,
+            status: data.status,
+            cache: data.cache,
+            accesslist_id: values.accesslist,
+            secrule_id: values.rule,
+            created_at: data.created_at,
+            updated_at: undefined,
+            source: {
+                hostname: values.hostname,
+                source_id: data.source.source_id,
+                proxy_id: data.proxy_id,
+                created_at: data.source.created_at,
+                updated_at: undefined,
+                port: values.port
+            },
+            destination: {
+                destination_id: data.destination.destination_id,
+                source_id: data.source.source_id,
+                scheme: values.scheme,
+                ip: values.ip,
+                forward_port: values.forward_port,
+                created_at: data.destination.created_at,
+                updated_at: undefined
+            },
+            secrule: data.secrule,
+            accesslist: data.accesslist
         }
+        try {
+            let res = await ProxyAPI.updateItem(data.proxy_id, proxyUpdated)
+            if (res.success) {
+                toast({
+                    description: "Created",
+                })
+                return
+            }
 
-        if (values.scheme !== data.destination.scheme || values.ip !== data.destination.ip || values.forward_port !== data.destination.forward_port) {
-            // update destination
-        }
-
-        if (values.rule !== data.secrule.name) {
-            // update secrule name
-        }
-
-        if (values.accesslist !== data.accesslist.name) {
-            // update access list
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Somethinmg went wrong",
+                description: `${error}`
+            })
         }
     }
 
@@ -455,12 +466,43 @@ const ProxyEditor = () => {
                                                                                         onChange={(e) => field.onChange(parseInt(e.target.value))}
                                                                                     />
                                                                                 ) : (
-                                                                                    <Input
-                                                                                        placeholder={`Input ${element.field}`}
-                                                                                        {...field}
-                                                                                        type={"text"}
-                                                                                        value={field.value !== undefined ? String(field.value) : ''}
-                                                                                    />
+                                                                                    element.field === "accesslist" ? (
+                                                                                        <Select
+                                                                                            value={field.value as string || data.accesslist_id}
+                                                                                            onValueChange={(value) => { field.onChange(value) }}
+                                                                                        >
+                                                                                            <SelectTrigger className="w-[100%]">
+                                                                                                <SelectValue placeholder="Select Accesslist" />
+                                                                                            </SelectTrigger>
+                                                                                            <SelectContent >
+                                                                                                {selectAccesslist.map((item) => (
+                                                                                                    <SelectItem value={item.accesslist_id} key={item.accesslist_id}>{item.name}</SelectItem>
+                                                                                                ))}
+                                                                                            </SelectContent>
+                                                                                        </Select>
+                                                                                    ) : (
+                                                                                        element.field === "rule" ? (
+                                                                                            <Select
+                                                                                                value={field.value as string || data.secrule_id}
+                                                                                                onValueChange={(value) => field.onChange(value)}
+                                                                                            >
+                                                                                                <SelectTrigger className="w-[100%]">
+                                                                                                    <SelectValue placeholder="Select SecRule" />
+                                                                                                </SelectTrigger>
+                                                                                                <SelectContent defaultValue={data.secrule_id}>
+                                                                                                    {selectSecRule.map((item) => (
+                                                                                                        <SelectItem value={item.secrule_id} key={item.secrule_id} defaultChecked>{item.name}</SelectItem>
+                                                                                                    ))}
+                                                                                                </SelectContent>
+                                                                                            </Select>
+                                                                                        ) : (
+                                                                                            <Input
+                                                                                                placeholder={`Input ${element.field}`}
+                                                                                                {...field}
+                                                                                                type={"text"}
+                                                                                                value={field.value !== undefined ? String(field.value) : ''}
+                                                                                            />
+                                                                                        ))
                                                                                 )}
                                                                             </FormControl>
                                                                             {/* <FormControl>
@@ -495,7 +537,7 @@ const ProxyEditor = () => {
                                         <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(14,165,233)" }} type="submit">Update Proxy</Button>
                                     </div>
                                     <div>
-                                        <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button">Close</Button>
+                                        <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button" onClick={() => { router.back() }}>Close</Button>
                                     </div>
                                 </div>
                             </form>
