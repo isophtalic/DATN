@@ -61,14 +61,26 @@ func (repo *PostgresDataProvider) DeleteByID(id string) error {
 	return tx.Error
 }
 
-func (repo *PostgresDataProvider) FindBySecRuleID(sr_id string) ([]model.Data, error) {
+func (repo *PostgresDataProvider) DeleteBySecRuleID(id string) error {
+	database := repo.db
+	tx := database.Model(&model.Data{}).Where("secrule_id = ?", id).Delete(&model.Data{SecRuleID_FK: id})
+	return tx.Error
+}
+
+func (repo *PostgresDataProvider) FindBySecRuleID(sr_id string, pgn *pagination.Pagination[model.Data]) (*pagination.Pagination[model.Data], error) {
 	database := repo.db
 
 	result := make([]model.Data, 0)
-	tx := database.Model(&model.Data{}).Where(&model.Data{SecRuleID_FK: sr_id}).Find(&result)
+	tx := database.Where(&model.Data{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.Data{}, pgn, database)).Find(&result)
+	pgn.Records = result
 
-	return result, tx.Error
+	if tx.Error != nil {
+		return &pagination.Pagination[model.Data]{}, tx.Error
+	}
+
+	return pgn, nil
 }
+
 func (repo *PostgresDataProvider) FindByID(id string) (model.Data, error) {
 	database := repo.db
 

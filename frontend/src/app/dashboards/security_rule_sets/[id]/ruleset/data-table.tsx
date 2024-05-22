@@ -1,5 +1,5 @@
 "use client"
-import React, { useId } from "react"
+import React, { useEffect, useId } from "react"
 import { useRouter } from "next/navigation"
 
 import {
@@ -33,6 +33,7 @@ interface DataTableProps<RuleSetInterface, TValue> {
     columns: ColumnDef<RuleSetInterface, TValue>[]
     data: RuleSetInterface[],
     secrule_id: string,
+    pageCount: number;
     pagination: PaginationState,
     onSetPagination: (pagination: PaginationState) => void
 }
@@ -42,6 +43,7 @@ export function DataTable<RuleSetInterface, TValue>({
     data,
     secrule_id,
     pagination,
+    pageCount,
     onSetPagination,
 }: DataTableProps<RuleSetInterface, TValue>) {
 
@@ -63,8 +65,17 @@ export function DataTable<RuleSetInterface, TValue>({
             sorting,
             pagination: pagination,
         },
+        pageCount,
+        manualPagination: true,
     })
 
+    useEffect(() => {
+        table.setPageCount(pageCount);
+        table.setOptions((prev) => ({
+            ...prev,
+            data,
+        }));
+    }, [data, pageCount, table]);
 
     const router = useRouter()
 

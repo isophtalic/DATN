@@ -51,11 +51,23 @@ const updateItem = (id: string, ruleUpdated: RuleSetInterface) => {
     return
 }
 
+const deleteByID = (id: string) => {
+    return handleRequest<RuleSetInterface>(
+        () => request.delete(`${rulesetBaseURL}/${id}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
+
 const RuleAPI = {
     detail,
     view,
     newItem,
-    updateItem
+    updateItem,
+    deleteByID
 }
 
 export default RuleAPI

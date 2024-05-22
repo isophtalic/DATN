@@ -24,9 +24,13 @@ const detail = (id: string) => {
     )
 }
 
-const showRuleSets = (id: string) => {
+const showRuleSets = (id: string, pagination: PaginationState) => {
+    const param = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize
+    }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/ruleset`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/ruleset?page=${param.page}&limit=${param.limit}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -35,9 +39,14 @@ const showRuleSets = (id: string) => {
     )
 }
 
-const showDataRule = (id: string) => {
+// TODO: fix delete data and pagination
+const showDataRule = (id: string, pagination: PaginationState) => {
+    const param = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize
+    }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/data`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/data?page=${param.page}&limit=${param.limit}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,

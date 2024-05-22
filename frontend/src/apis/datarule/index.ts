@@ -51,11 +51,23 @@ const updateItem = (id: string, ruleUpdated: DataRuleInterface) => {
     return
 }
 
+const deleteByID = (id: string) => {
+    return handleRequest<DataRuleInterface>(
+        () => request.delete(`${dataruleBaseURL}/${id}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
+
 const DataRuleAPI = {
     detail,
     view,
     newItem,
-    updateItem
+    updateItem,
+    deleteByID
 }
 
 export default DataRuleAPI

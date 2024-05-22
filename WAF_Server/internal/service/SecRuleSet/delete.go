@@ -4,11 +4,8 @@ import (
 	"fmt"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence"
-	pkg "waf_server/internal/pkg/error"
 
 	"waf_server/internal/service"
-
-	"gorm.io/gorm"
 )
 
 func DeleteByID(id, actor string) error {
@@ -17,36 +14,14 @@ func DeleteByID(id, actor string) error {
 		return fmt.Errorf("invalid security rule set")
 	}
 
-	rs, err := persistence.RuleSet().FindBySecRuleID(id)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	err = persistence.RuleSet().DeleteBySecRuleID(id)
+	if err != nil {
 		return err
 	}
 
-	multipleErr := pkg.NewMultiplerror()
-
-	for _, v := range rs {
-		err := persistence.RuleSet().DeleteByID(v.RuleID)
-		if err != nil {
-			multipleErr.Append(err)
-			continue
-		}
-	}
-
-	data, err := persistence.Data().FindBySecRuleID(id)
-	if err != nil && err != gorm.ErrRecordNotFound {
+	err = persistence.Data().DeleteBySecRuleID(id)
+	if err != nil {
 		return err
-	}
-
-	for _, v := range data {
-		err := persistence.Data().DeleteByID(v.DataID)
-		if err != nil {
-			multipleErr.Append(err)
-			continue
-		}
-	}
-
-	if multipleErr.ErrorOrNil() != nil {
-		return multipleErr.ErrorOrNil()
 	}
 
 	err = persistence.SecRuleSet().DeleteByID(id)

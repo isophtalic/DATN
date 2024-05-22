@@ -18,10 +18,12 @@ func FindByID(id string) (model.Data, error) {
 	return persistence.Data().FindByID(id)
 }
 
-func FindBySecRuleID(id string) ([]model.Data, error) {
+func FindBySecRuleID(c *gin.Context, id string) (*pagination.Pagination[model.Data], error) {
+	pgn := pagination.NewPagination[model.Data](c)
+
 	if _, err := persistence.SecRuleSet().FindByID(id); err != nil {
-		return []model.Data{}, nil
+		return nil, nil
 	}
 
-	return persistence.Data().FindBySecRuleID(id)
+	return persistence.Data().FindBySecRuleID(id, pgn)
 }

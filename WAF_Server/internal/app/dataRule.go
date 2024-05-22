@@ -52,7 +52,7 @@ func (app *Datahandler) FindByID(c *gin.Context) {
 func (app *Datahandler) FindBySecID(c *gin.Context) {
 	id := c.Param("id")
 
-	result, err := service_data.FindBySecRuleID(id)
+	result, err := service_data.FindBySecRuleID(c, id)
 	if err != nil {
 		ResponseError(c, err)
 		return

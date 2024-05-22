@@ -61,13 +61,25 @@ func (repo *PostgresRuleSetProvider) DeleteByID(id string) error {
 	return tx.Error
 }
 
-func (repo *PostgresRuleSetProvider) FindBySecRuleID(sr_id string) ([]model.RuleSet, error) {
+func (repo *PostgresRuleSetProvider) DeleteBySecRuleID(id string) error {
+	database := repo.db
+	tx := database.Model(&model.RuleSet{}).Where("secrule_id = ?", id).Delete(&model.RuleSet{SecRuleID_FK: id})
+	return tx.Error
+}
+
+func (repo *PostgresRuleSetProvider) FindBySecRuleID(sr_id string, pgn *pagination.Pagination[model.RuleSet]) (*pagination.Pagination[model.RuleSet], error) {
 	database := repo.db
 
 	result := make([]model.RuleSet, 0)
-	tx := database.Model(&model.RuleSet{}).Where(&model.RuleSet{SecRuleID_FK: sr_id}).Find(&result)
+	tx := database.Where(&model.RuleSet{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&result)
+	pgn.Records = result
 
-	return result, tx.Error
+	if tx.Error != nil {
+		return &pagination.Pagination[model.RuleSet]{}, tx.Error
+	}
+
+	return pgn, nil
+
 }
 func (repo *PostgresRuleSetProvider) FindByID(id string) (model.RuleSet, error) {
 	database := repo.db
