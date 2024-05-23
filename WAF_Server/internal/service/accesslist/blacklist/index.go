@@ -37,7 +37,7 @@ func (*ServiceBlacklistHandler) List(al_id string, c *gin.Context) (*pagination.
 
 	pgn := pagination.NewPagination[model.Blacklist](c)
 
-	return persistence.Blacklist().FindByAccesslistID(al_id, pgn)
+	return persistence.Blacklist().FindByAccesslistID(al_id, pgn, pgn.Search)
 }
 
 func (*ServiceBlacklistHandler) UpdateByID(bl_id string, input model.Blacklist, actor string) error {

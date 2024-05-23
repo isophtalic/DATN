@@ -11,7 +11,7 @@ import (
 func List(c *gin.Context) (*pagination.Pagination[model.Data], error) {
 	pgn := pagination.NewPagination[model.Data](c)
 
-	return persistence.Data().List(pgn)
+	return persistence.Data().List(pgn, pgn.Search)
 }
 
 func FindByID(id string) (model.Data, error) {

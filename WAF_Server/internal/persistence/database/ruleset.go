@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence/postgres"
 	"waf_server/internal/pkg/pagination"
@@ -34,10 +35,15 @@ func (repo *PostgresRuleSetProvider) Save(rs model.RuleSet) error {
 	return database.Save(&rs).Error
 }
 
-func (repo *PostgresRuleSetProvider) List(pgn *pagination.Pagination[model.RuleSet]) (*pagination.Pagination[model.RuleSet], error) {
+func (repo *PostgresRuleSetProvider) List(pgn *pagination.Pagination[model.RuleSet], valueSearch string) (*pagination.Pagination[model.RuleSet], error) {
 	database := repo.db
 	results := make([]model.RuleSet, 0)
-	tx := database.Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+	var tx *gorm.DB
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = database.Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.Where("file LIKE ?", "%"+valueSearch+"%").Or("id LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

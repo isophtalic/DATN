@@ -12,7 +12,7 @@ import (
 func List(c *gin.Context) (*pagination.Pagination[model.SecurityRuleSet], error) {
 	pgn := pagination.NewPagination[model.SecurityRuleSet](c)
 
-	return persistence.SecRuleSet().List(pgn)
+	return persistence.SecRuleSet().List(pgn, pgn.Search)
 }
 
 func FindByID(id string) (model.SecurityRuleSet, error) {

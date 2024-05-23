@@ -7,7 +7,7 @@ import (
 
 type SecurityRuleSetRepository interface {
 	Save(sec model.SecurityRuleSet) error
-	List(pgn *pagination.Pagination[model.SecurityRuleSet]) (*pagination.Pagination[model.SecurityRuleSet], error)
+	List(pgn *pagination.Pagination[model.SecurityRuleSet], valueSearch string) (*pagination.Pagination[model.SecurityRuleSet], error)
 	FindByID(id string) (model.SecurityRuleSet, error)
 	FindByName(name string) (model.SecurityRuleSet, error)
 	UpdateByID(sr model.SecurityRuleSet) error
@@ -16,7 +16,7 @@ type SecurityRuleSetRepository interface {
 
 type RuleSetrepository interface {
 	Save(rule model.RuleSet) error
-	List(pgn *pagination.Pagination[model.RuleSet]) (*pagination.Pagination[model.RuleSet], error)
+	List(pgn *pagination.Pagination[model.RuleSet], valueSearch string) (*pagination.Pagination[model.RuleSet], error)
 	UpdateByID(rule model.RuleSet) error
 	FindBySecRuleID(sr_id string, pgn *pagination.Pagination[model.RuleSet]) (*pagination.Pagination[model.RuleSet], error)
 	FindBySecRuleIDAndIdRule(sr_id string, id int) (model.RuleSet, error)
@@ -27,7 +27,7 @@ type RuleSetrepository interface {
 
 type DataRepository interface {
 	Save(rule model.Data) error
-	List(pgn *pagination.Pagination[model.Data]) (*pagination.Pagination[model.Data], error)
+	List(pgn *pagination.Pagination[model.Data], valueSearch string) (*pagination.Pagination[model.Data], error)
 	UpdateByID(rule model.Data) error
 	FindBySecRuleID(sr_id string, pgn *pagination.Pagination[model.Data]) (*pagination.Pagination[model.Data], error)
 	FindByID(id string) (model.Data, error)

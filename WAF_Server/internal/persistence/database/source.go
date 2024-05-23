@@ -31,10 +31,15 @@ func (repo *PostgresSourceProvider) Save(proxy model.Source) error {
 	return database.Save(&proxy).Error
 }
 
-func (repo *PostgresSourceProvider) List(pgn *pagination.Pagination[model.Source]) (*pagination.Pagination[model.Source], error) {
+func (repo *PostgresSourceProvider) List(pgn *pagination.Pagination[model.Source], valueSearch string) (*pagination.Pagination[model.Source], error) {
 	database := repo.db
 	results := make([]model.Source, 0)
-	tx := database.Scopes(pagination.Paginate(&model.Source{}, pgn, database)).Find(&results)
+	var tx *gorm.DB
+	if valueSearch == "" {
+		tx = database.Scopes(pagination.Paginate(&model.Source{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.Where("host_name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.Source{}, pgn, database)).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

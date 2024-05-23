@@ -13,6 +13,7 @@ type Pagination[T any] struct {
 	Limit      int    `json:"limit,omitempty"`
 	Page       int    `json:"page,omitempty"`
 	Sort       string `json:"sort,omitempty"`
+	Search     string `json:"search"`
 	TotalRows  int64  `json:"total_rows"`
 	TotalPages int    `json:"total_pages"`
 	Records    []T    `json:"records"`
@@ -40,6 +41,10 @@ func (p *Pagination[T]) GetSort() string {
 	return p.Sort
 }
 
+func (p *Pagination[T]) GetSearch() string {
+	return p.Search
+}
+
 func Paginate[T any](table interface{}, pagination *Pagination[T], db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
 	db.Model(table).Count(&totalRows)
@@ -54,7 +59,7 @@ func Paginate[T any](table interface{}, pagination *Pagination[T], db *gorm.DB) 
 }
 
 func NewPagination[T any](ctx *gin.Context) *Pagination[T] {
-	limitStr := ctx.DefaultQuery("limit", "0") // Sử dụng DefaultQuery để xác định giá trị mặc định
+	limitStr := ctx.DefaultQuery("limit", "0")
 	limit, err := strconv.Atoi(limitStr)
 	if err != nil || limit < 0 {
 		limit = 10
@@ -67,10 +72,12 @@ func NewPagination[T any](ctx *gin.Context) *Pagination[T] {
 	}
 
 	sort := ctx.Query("sort")
+	search := ctx.Query("search")
 
 	return &Pagination[T]{
-		Limit: limit,
-		Page:  page,
-		Sort:  sort,
+		Limit:  limit,
+		Page:   page,
+		Sort:   sort,
+		Search: search,
 	}
 }

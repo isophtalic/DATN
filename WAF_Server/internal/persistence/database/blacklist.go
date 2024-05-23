@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence/postgres"
 	"waf_server/internal/pkg/pagination"
@@ -65,11 +66,16 @@ func (repo *PostgresBlackListProvider) DeleteByAccesslistID(id string) error {
 	return tx.Error
 }
 
-func (repo *PostgresBlackListProvider) FindByAccesslistID(al_id string, pgn *pagination.Pagination[model.Blacklist]) (*pagination.Pagination[model.Blacklist], error) {
+func (repo *PostgresBlackListProvider) FindByAccesslistID(al_id string, pgn *pagination.Pagination[model.Blacklist], valueSearch string) (*pagination.Pagination[model.Blacklist], error) {
 	database := repo.db
 
 	results := make([]model.Blacklist, 0)
-	tx := database.Scopes(pagination.Paginate(&model.Blacklist{}, pgn, database)).Where(&model.Blacklist{AccessListID_FK: al_id}).Find(&results)
+	var tx *gorm.DB
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = database.Scopes(pagination.Paginate(&model.Blacklist{}, pgn, database)).Where(&model.Blacklist{AccessListID_FK: al_id}).Find(&results)
+	} else {
+		tx = database.Where("ip LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.Blacklist{}, pgn, database)).Where(&model.Blacklist{AccessListID_FK: al_id}).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

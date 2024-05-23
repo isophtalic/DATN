@@ -2,6 +2,7 @@ package service
 
 import (
 	"fmt"
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence"
 	"waf_server/internal/pkg/pagination"
@@ -18,6 +19,10 @@ func (cmd *ServiceProxyHandler) List(c *gin.Context) (*pagination.Pagination[mod
 
 func (cmd *ServiceProxyHandler) ViewProxy(c *gin.Context) (*pagination.Pagination[model.ProxyViewer], error) {
 	pgn := pagination.NewPagination[model.Proxy](c)
+
+	if len(strings.TrimSpace(pgn.Search)) != 0 {
+		return cmd.SearchByHostName(c)
+	}
 
 	var result = []model.ProxyViewer{}
 	pgn, err := persistence.Proxy().List(pgn)
@@ -103,4 +108,51 @@ func (cmd *ServiceProxyHandler) ViewProxyDetail(id string) (model.ProxyViewerDet
 	}
 
 	return result, nil
+}
+
+func (cmd *ServiceProxyHandler) SearchByHostName(c *gin.Context) (*pagination.Pagination[model.ProxyViewer], error) {
+	pgn := pagination.NewPagination[model.Source](c)
+	src, err := persistence.Source().List(pgn, pgn.Search)
+	if err != nil {
+		return nil, err
+	}
+
+	var result = []model.ProxyViewer{}
+
+	for _, v := range src.Records {
+		proxy, err := persistence.Proxy().FindByID(v.ProxyID_FK)
+		if err != nil {
+			return nil, err
+		}
+
+		dest, err := persistence.Destination().FindBySourceID(v.SourceID)
+		if err != nil {
+			return nil, err
+		}
+
+		secrule, err := persistence.SecRuleSet().FindByID(proxy.SecRuleID_FK)
+		if err != nil {
+			return nil, err
+
+		}
+
+		result = append(result, model.ProxyViewer{
+			Hostname:    v.HostName,
+			Port:        v.Port,
+			Scheme:      dest.Scheme,
+			Ip:          dest.IP,
+			ForwardPort: dest.ForwardPort,
+			Rule:        secrule.Name,
+			Proxy:       proxy,
+		})
+	}
+
+	return &pagination.Pagination[model.ProxyViewer]{
+		Limit:      pgn.Limit,
+		Page:       pgn.Page,
+		TotalRows:  pgn.TotalRows,
+		TotalPages: pgn.TotalPages,
+		Sort:       pgn.Sort,
+		Records:    result,
+	}, nil
 }

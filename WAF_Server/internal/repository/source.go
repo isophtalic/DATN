@@ -7,7 +7,7 @@ import (
 
 type SourceRepository interface {
 	Save(source model.Source) error
-	List(pgn *pagination.Pagination[model.Source]) (*pagination.Pagination[model.Source], error)
+	List(pgn *pagination.Pagination[model.Source], valueSearch string) (*pagination.Pagination[model.Source], error)
 	FindByProxyID(proxy_id string) (model.Source, error)
 	FindByID(id string) (model.Source, error)
 	FindByHostname(hostname string) (model.Source, error)

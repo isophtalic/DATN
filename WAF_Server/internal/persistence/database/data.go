@@ -2,6 +2,7 @@ package database
 
 import (
 	"fmt"
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence/postgres"
 	"waf_server/internal/pkg/pagination"
@@ -34,10 +35,15 @@ func (repo *PostgresDataProvider) Save(rs model.Data) error {
 	return database.Save(&rs).Error
 }
 
-func (repo *PostgresDataProvider) List(pgn *pagination.Pagination[model.Data]) (*pagination.Pagination[model.Data], error) {
+func (repo *PostgresDataProvider) List(pgn *pagination.Pagination[model.Data], valueSearch string) (*pagination.Pagination[model.Data], error) {
 	database := repo.db
 	results := make([]model.Data, 0)
-	tx := database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Find(&results)
+	var tx *gorm.DB
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

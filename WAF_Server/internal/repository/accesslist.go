@@ -7,7 +7,7 @@ import (
 
 type AccessListRepository interface {
 	Save(model.AccessList) error
-	List(pgn *pagination.Pagination[model.AccessList]) (*pagination.Pagination[model.AccessList], error)
+	List(pgn *pagination.Pagination[model.AccessList], valueSearch string) (*pagination.Pagination[model.AccessList], error)
 	FindByID(id string) (model.AccessList, error)
 	FindByName(name string) (model.AccessList, error)
 	UpdateByID(id string, al model.AccessList) error

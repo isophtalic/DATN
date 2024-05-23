@@ -32,10 +32,16 @@ func (repo *PostgresAccessListProvider) Save(des model.AccessList) error {
 	return database.Save(&des).Error
 }
 
-func (repo *PostgresAccessListProvider) List(pgn *pagination.Pagination[model.AccessList]) (*pagination.Pagination[model.AccessList], error) {
+func (repo *PostgresAccessListProvider) List(pgn *pagination.Pagination[model.AccessList], valueSearch string) (*pagination.Pagination[model.AccessList], error) {
 	database := repo.db
 	results := make([]model.AccessList, 0)
-	tx := database.Scopes(pagination.Paginate(&model.AccessList{}, pgn, database)).Find(&results)
+	var tx *gorm.DB
+	if valueSearch != "" {
+		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.AccessList{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.Scopes(pagination.Paginate(&model.AccessList{}, pgn, database)).Find(&results)
+	}
+
 	pgn.Records = results
 
 	if tx.Error != nil {

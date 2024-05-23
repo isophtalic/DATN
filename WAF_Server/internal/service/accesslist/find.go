@@ -11,7 +11,7 @@ import (
 
 func Find(c *gin.Context) (*pagination.Pagination[model.AccessList], error) {
 	pgn := pagination.NewPagination[model.AccessList](c)
-	return persistence.Accesslist().List(pgn)
+	return persistence.Accesslist().List(pgn, pgn.Search)
 }
 
 type blacklist struct {

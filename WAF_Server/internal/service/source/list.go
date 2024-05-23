@@ -15,7 +15,7 @@ type SourceDetail struct {
 
 func List(c *gin.Context) (*pagination.Pagination[model.Source], error) {
 	pgn := pagination.NewPagination[model.Source](c)
-	return persistence.Source().List(pgn)
+	return persistence.Source().List(pgn, pgn.Search)
 }
 
 func FindByProxyID(id string) (SourceDetail, error) {

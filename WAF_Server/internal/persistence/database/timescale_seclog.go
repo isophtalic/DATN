@@ -36,8 +36,19 @@ func (repo *TimescaleSeclogProvider) Save(cmd *timescale_model.SecLog) error {
 func (repo *TimescaleSeclogProvider) List(pgn *pagination.Pagination[timescale_model.SecLog]) (*pagination.Pagination[timescale_model.SecLog], error) {
 	db := repo.db
 	results := make([]timescale_model.SecLog, 0)
-
-	tx := db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
+	valueSearch := pgn.Search
+	var tx *gorm.DB
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
+	} else {
+		tx = db.Where("client_ip LIKE ?", "%"+valueSearch+"%").
+			Where("host LIKE ?", "%"+valueSearch+"%").
+			Where("method LIKE ?", "%"+valueSearch+"%").
+			Where("proto LIKE ?", "%"+valueSearch+"%").
+			Where("uri LIKE ?", "%"+valueSearch+"%").
+			Where("mess LIKE ?", "%"+valueSearch+"%").
+			Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

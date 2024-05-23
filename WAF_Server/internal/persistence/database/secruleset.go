@@ -31,10 +31,15 @@ func (repo *PostgresSecRuleSetProvider) Save(srs model.SecurityRuleSet) error {
 	return database.Save(&srs).Error
 }
 
-func (repo *PostgresSecRuleSetProvider) List(pgn *pagination.Pagination[model.SecurityRuleSet]) (*pagination.Pagination[model.SecurityRuleSet], error) {
+func (repo *PostgresSecRuleSetProvider) List(pgn *pagination.Pagination[model.SecurityRuleSet], valueSearch string) (*pagination.Pagination[model.SecurityRuleSet], error) {
 	database := repo.db
 	results := make([]model.SecurityRuleSet, 0)
-	tx := database.Scopes(pagination.Paginate(&model.SecurityRuleSet{}, pgn, database)).Find(&results)
+	var tx *gorm.DB
+	if valueSearch == "" {
+		tx = database.Scopes(pagination.Paginate(&model.SecurityRuleSet{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.SecurityRuleSet{}, pgn, database)).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

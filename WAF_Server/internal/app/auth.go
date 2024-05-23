@@ -93,18 +93,14 @@ func (*UserHandler) ListUser(c *gin.Context) {
 	ResponseJSON(c, "Successfully", users)
 }
 
-type ChangePass struct {
-	OldPass string `json:"oldpass"`
-	NewPass string `json:"newpass"`
-}
-
 func (*UserHandler) ChangePassword(c *gin.Context) {
 	actor := c.MustGet("user").(model.User)
 	if actor.Role != 0 {
 		ResponseError(c, ProhibitionError{Message: "Action not allowed"})
 		return
 	}
-	var cmd ChangePass
+
+	var cmd model.ChangePass
 	if err := c.ShouldBindJSON(&cmd); err != nil {
 		ResponseError(c, err)
 		return
