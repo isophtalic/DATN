@@ -25,13 +25,13 @@ const detail = (id: string) => {
 }
 
 
-const view = (pagination: PaginationState) => {
+const view = (pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${seclogBaseURL}?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${seclogBaseURL}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

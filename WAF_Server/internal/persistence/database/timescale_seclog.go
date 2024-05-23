@@ -42,17 +42,17 @@ func (repo *TimescaleSeclogProvider) List(pgn *pagination.Pagination[timescale_m
 		tx = db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("created_at DESC").Find(&results)
 	} else {
 		tx = db.Where("client_ip LIKE ?", "%"+valueSearch+"%").
-			Where("host LIKE ?", "%"+valueSearch+"%").
-			Where("method LIKE ?", "%"+valueSearch+"%").
-			Where("proto LIKE ?", "%"+valueSearch+"%").
-			Where("uri LIKE ?", "%"+valueSearch+"%").
-			Where("mess LIKE ?", "%"+valueSearch+"%").
+			Or("host LIKE ?", "%"+valueSearch+"%").
+			Or("method LIKE ?", "%"+valueSearch+"%").
+			Or("proto LIKE ?", "%"+valueSearch+"%").
+			Or("uri LIKE ?", "%"+valueSearch+"%").
+			Or("mess LIKE ?", "%"+valueSearch+"%").
 			Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db.Where("client_ip LIKE ?", "%"+valueSearch+"%").
-				Where("host LIKE ?", "%"+valueSearch+"%").
-				Where("method LIKE ?", "%"+valueSearch+"%").
-				Where("proto LIKE ?", "%"+valueSearch+"%").
-				Where("uri LIKE ?", "%"+valueSearch+"%").
-				Where("mess LIKE ?", "%"+valueSearch+"%"))).Order("created_at DESC").Find(&results)
+				Or("host LIKE ?", "%"+valueSearch+"%").
+				Or("method LIKE ?", "%"+valueSearch+"%").
+				Or("proto LIKE ?", "%"+valueSearch+"%").
+				Or("uri LIKE ?", "%"+valueSearch+"%").
+				Or("mess LIKE ?", "%"+valueSearch+"%"))).Order("created_at DESC").Find(&results)
 	}
 	pgn.Records = results
 
