@@ -1,7 +1,6 @@
 package pagination
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 
@@ -48,7 +47,6 @@ func (p *Pagination[T]) GetSearch() string {
 func Paginate[T any](table interface{}, pagination *Pagination[T], db *gorm.DB) func(db *gorm.DB) *gorm.DB {
 	var totalRows int64
 	db.Model(table).Count(&totalRows)
-	fmt.Println("totalRows", totalRows)
 	pagination.TotalRows = totalRows
 	totalPages := int(math.Ceil(float64(totalRows) / float64(pagination.GetLimit())))
 	pagination.TotalPages = totalPages

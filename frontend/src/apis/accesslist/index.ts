@@ -6,6 +6,7 @@ import { accesslistBaseURL } from '../config'
 import { AUTHEN_TOKEN_KEY } from '../constants/const'
 import Cookie from 'js-cookie'
 import { PaginationState } from '@tanstack/react-table'
+import { String, values } from 'lodash'
 
 const HeaderAuth = {
     headers: {
@@ -24,13 +25,13 @@ const detail = (id: string) => {
     )
 }
 
-const showBlacklist = (id: string, pagination: PaginationState) => {
+const showBlacklist = (id: string, pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<BlacklistInterface>(
-        () => request.get(`${accesslistBaseURL}/${id}/blacklist?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${accesslistBaseURL}/${id}/blacklist?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -39,13 +40,13 @@ const showBlacklist = (id: string, pagination: PaginationState) => {
     )
 }
 
-const showProxies = (id: string, pagination: PaginationState) => {
+const showProxies = (id: string, pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${accesslistBaseURL}/${id}/proxies?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${accesslistBaseURL}/${id}/proxies?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -65,13 +66,13 @@ const view = () => {
     )
 }
 
-const list = (pagination: PaginationState) => {
+const list = (pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${accesslistBaseURL}?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${accesslistBaseURL}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

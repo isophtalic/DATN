@@ -47,13 +47,13 @@ const view = () => {
     )
 }
 
-const list = (pagination: PaginationState) => {
+const list = (pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${actionsBaseURL}?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${actionsBaseURL}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

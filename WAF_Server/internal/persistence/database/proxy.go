@@ -1,6 +1,7 @@
 package database
 
 import (
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence/postgres"
 	"waf_server/internal/pkg/pagination"
@@ -60,6 +61,32 @@ func (repo *PostgresProxyProvider) FindByAccesslistID(id string, pgn *pagination
 	database := repo.db
 	results := make([]model.Proxy, 0)
 	tx := database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Where(&model.Proxy{AccessListID_FK: id}).Find(&results)
+	pgn.Records = results
+
+	if tx.Error != nil {
+		return &pagination.Pagination[model.Proxy]{}, tx.Error
+	}
+
+	return pgn, nil
+}
+
+func (repo *PostgresProxyProvider) FindByAccesslistIDAndSearch(id string, pgn *pagination.Pagination[model.Proxy]) (*pagination.Pagination[model.Proxy], error) {
+	database := repo.db
+	results := make([]model.Proxy, 0)
+	var tx *gorm.DB
+	if len(strings.TrimSpace(pgn.Search)) != 0 {
+		tx = database.Model(&model.Proxy{}).
+			Where(&model.Proxy{AccessListID_FK: id}).
+			Joins("INNER JOIN sources ON sources.proxy_id = proxies.proxy_id AND sources.host_name like ?", "%"+pgn.Search+"%").
+			Scopes(
+				pagination.Paginate(&model.Proxy{},
+					pgn,
+					database.Where(&model.Proxy{AccessListID_FK: id}).
+						Joins("INNER JOIN sources ON sources.proxy_id = proxies.proxy_id AND sources.host_name like ?", "%"+pgn.Search+"%"))).Find(&results)
+		// pgn.TotalRows
+	} else {
+		tx = database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Where(&model.Proxy{AccessListID_FK: id}).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {

@@ -39,7 +39,7 @@ func (repo *TimescaleSeclogProvider) List(pgn *pagination.Pagination[timescale_m
 	valueSearch := pgn.Search
 	var tx *gorm.DB
 	if len(strings.TrimSpace(valueSearch)) == 0 {
-		tx = db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
+		tx = db.Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("created_at DESC").Find(&results)
 	} else {
 		tx = db.Where("client_ip LIKE ?", "%"+valueSearch+"%").
 			Where("host LIKE ?", "%"+valueSearch+"%").
@@ -47,7 +47,12 @@ func (repo *TimescaleSeclogProvider) List(pgn *pagination.Pagination[timescale_m
 			Where("proto LIKE ?", "%"+valueSearch+"%").
 			Where("uri LIKE ?", "%"+valueSearch+"%").
 			Where("mess LIKE ?", "%"+valueSearch+"%").
-			Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db)).Order("updated_at DESC").Find(&results)
+			Scopes(pagination.Paginate(&timescale_model.SecLog{}, pgn, db.Where("client_ip LIKE ?", "%"+valueSearch+"%").
+				Where("host LIKE ?", "%"+valueSearch+"%").
+				Where("method LIKE ?", "%"+valueSearch+"%").
+				Where("proto LIKE ?", "%"+valueSearch+"%").
+				Where("uri LIKE ?", "%"+valueSearch+"%").
+				Where("mess LIKE ?", "%"+valueSearch+"%"))).Order("created_at DESC").Find(&results)
 	}
 	pgn.Records = results
 

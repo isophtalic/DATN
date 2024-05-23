@@ -42,7 +42,7 @@ func (repo *PostgresActionsProvider) List(pgn *pagination.Pagination[model.Actio
 	if len(strings.TrimSpace(valueSearch)) == 0 {
 		tx = database.Scopes(pagination.Paginate(&model.Actions{}, pgn, database)).Find(&results)
 	} else {
-		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Or("target LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.Actions{}, pgn, database)).Find(&results)
+		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Or("target LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.Actions{}, pgn, database.Where("name LIKE ?", "%"+valueSearch+"%").Or("target LIKE ?", "%"+valueSearch+"%"))).Find(&results)
 	}
 	pgn.Records = results
 

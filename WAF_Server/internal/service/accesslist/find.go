@@ -37,7 +37,11 @@ func FindProxyUseAccesslist(id string, c *gin.Context) (*pagination.Pagination[m
 	pgn := pagination.NewPagination[model.Proxy](c)
 	var result = []model.ProxyViewer{}
 
-	pgn, err := persistence.Proxy().FindByAccesslistID(id, pgn)
+	// if pgn.Search != "" {
+	pgn, err := persistence.Proxy().FindByAccesslistIDAndSearch(id, pgn)
+	// }
+
+	// pgn, err := persistence.Proxy().FindByAccesslistID(id, pgn)
 	if err != nil {
 		return nil, err
 	}

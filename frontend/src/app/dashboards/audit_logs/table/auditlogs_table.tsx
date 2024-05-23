@@ -5,8 +5,9 @@ import { columns } from './columns'
 import { DataTable } from './data-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Skeleton } from "@/components/ui/skeleton"
-import { InitialPaginationState } from '@/store/constants/const'
+import { DebounceValue, InitialPaginationState } from '@/store/constants/const'
 import { useRouter } from 'next/navigation'
+import { useDebounce } from "@uidotdev/usehooks";
 
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
@@ -24,11 +25,24 @@ async function getData(pagination: PaginationState): Promise<any> {
     }
 }
 
+async function searchData(pagination: PaginationState, valueSearch: string): Promise<any> {
+    let result: any[] = []
+    console.log("🚀 ~ searchData ~ pagination, valueSearch:", pagination, valueSearch)
+    try {
+        const response = await ActionsAPI.list(pagination, valueSearch)
+        return response.data
+    } catch (error) {
+        console.log(error);
+    }
+}
+
 const AuditLogsTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [pageCount, setPageCount] = useState<number>(1);
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
     const [data, setData] = useState<ActionsView[]>([]);
+    const [valueSearch, setValueSearch] = useState<string>("")
+    const debouncedSearchTerm = useDebounce(valueSearch, DebounceValue);
     // const initData = await getData(initialStatePagination)
 
     // let dataRef = useRef<ProxyViewer[]>([])
@@ -41,24 +55,36 @@ const AuditLogsTable = () => {
 
     const router = useRouter()
 
-    useEffect(() => {
-        const fetchData = async () => {
-            setLoading(false);
-            var newData
-            try {
-                newData = await getData(pagination)
-                // console.log("🚀 ~ fetchData ~ newData:", newData)
-            } catch (error) {
-                console.log("🚀 ~ fetchData ~ error:", error)
-                return
-            }
 
-            if (newData !== undefined) {
-                setPageCount(newData.total_pages)
-                setData(newData.records);
+    const search = async () => {
+        setLoading(true);
+        var newData
+        try {
+            newData = await searchData(pagination, valueSearch)
+            if (newData) {
+                setPageCount(newData.total_pages ?? 1);
+                setData(newData.records ?? []);
             }
+        } catch (error) {
+            console.log("🚀 ~ fetchData ~ error:", error)
+            return
+        } finally {
+            setLoading(false);
         }
-        fetchData()
+    }
+
+    const handleSearch = (e: any) => {
+        setValueSearch(e.target.value);
+    };
+
+    useEffect(() => {
+        search()
+    }, [debouncedSearchTerm, pagination])
+
+
+    useEffect(() => {
+        search()
+        setLoading(false);
     }, [pagination])
 
     useEffect(() => {
@@ -79,7 +105,7 @@ const AuditLogsTable = () => {
                     <div className="flex">
                         <div className='relative h-9 w-full md:w-1/3 md:flex-shrink-0 mb-6 mb-6'>
                             <MagnifyingGlassIcon className='inline-block absolute ml-2 mt-1 text-gray-400' width={20} height={24} />
-                            <Input data-testid="search-input" className="appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800 appearance-none rounded-full h-8 pl-10 w-full focus:bg-white focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800" placeholder="Search" type="search" spellCheck="false" aria-label="Search"></Input>
+                            <Input onChange={handleSearch} data-testid="search-input" className="appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800 appearance-none rounded-full h-8 pl-10 w-full focus:bg-white focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 appearance-none bg-white dark:bg-gray-800 shadow rounded-full h-8 w-full dark:focus:bg-gray-800" placeholder="Search" type="search" spellCheck="false" aria-label="Search"></Input>
                         </div>
                     </div>
                 </div>

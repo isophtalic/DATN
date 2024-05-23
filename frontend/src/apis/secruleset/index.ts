@@ -24,13 +24,13 @@ const detail = (id: string) => {
     )
 }
 
-const showRuleSets = (id: string, pagination: PaginationState) => {
+const showRuleSets = (id: string, pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/ruleset?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/ruleset?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -39,14 +39,13 @@ const showRuleSets = (id: string, pagination: PaginationState) => {
     )
 }
 
-// TODO: fix delete data and pagination
-const showDataRule = (id: string, pagination: PaginationState) => {
+const showDataRule = (id: string, pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/data?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/data?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -54,13 +53,13 @@ const showDataRule = (id: string, pagination: PaginationState) => {
         },
     )
 }
-const view = (pagination: PaginationState) => {
+const view = (pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

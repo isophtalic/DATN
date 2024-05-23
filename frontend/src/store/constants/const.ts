@@ -14,3 +14,5 @@ export const InitialPaginationState: PaginationState = {
     pageIndex: 0,
     pageSize: 10
 }
+
+export const DebounceValue = 800

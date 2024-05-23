@@ -12,10 +12,20 @@ import { MagnifyingGlassIcon } from '@heroicons/react/24/outline';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { toast } from '@/components/ui/use-toast';
+import { useDebounce } from "@uidotdev/usehooks";
 
 const getData = async (pagination: PaginationState): Promise<any> => {
     try {
         const response = await ProxyAPI.view(pagination);
+        return response.data;
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const searchData = async (pagination: PaginationState, valueSearch: string): Promise<any> => {
+    try {
+        const response = await ProxyAPI.view(pagination, valueSearch);
         return response.data;
     } catch (error) {
         console.error(error);
@@ -46,6 +56,8 @@ const ProxyTable = () => {
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState);
     const [data, setData] = useState<any[]>([]);
     const [pageCount, setPageCount] = useState<number>(1);
+    const [valueSearch, setValueSearch] = useState<string>("")
+    const debouncedSearchTerm = useDebounce(valueSearch, 800);
 
     const router = useRouter();
 
@@ -63,8 +75,8 @@ const ProxyTable = () => {
         try {
             const newData = await getData(pagination);
             if (newData) {
-                setPageCount(newData.total_pages);
-                setData(newData.records);
+                setPageCount(newData.total_pages ?? 1);
+                setData(newData.records ?? []);
             }
         } catch (error) {
             console.error("Error fetching data:", error);
@@ -72,6 +84,28 @@ const ProxyTable = () => {
             setLoading(false);
         }
     };
+
+    const search = async () => {
+        setLoading(true);
+        try {
+            const newData = await searchData(pagination, valueSearch);
+            if (newData) {
+                setPageCount(newData.total_pages ?? 1);
+                setData(newData.records ?? []);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+    const handleSearch = (e: any) => {
+        setValueSearch(e.target.value);
+    };
+
+    useEffect(() => {
+        search()
+    }, [debouncedSearchTerm])
 
     useEffect(() => {
         fetchData();
@@ -99,6 +133,7 @@ const ProxyTable = () => {
                             type="search"
                             spellCheck="false"
                             aria-label="Search"
+                            onChange={handleSearch}
                         />
                     </div>
                     <div className="w-full flex items-center mb-6">

@@ -69,8 +69,8 @@ const UserTable = () => {
         try {
             newData = await getData(pagination)
             if (newData) {
-                setPageCount(newData.total_pages);
-                setData(newData.records);
+                setPageCount(newData.total_pages ?? 1);
+                setData(newData.records ?? []);
             }
         } catch (error) {
             console.log("🚀 ~ fetchData ~ error:", error)
