@@ -1,10 +1,22 @@
 <!-- template.html -->
 <!DOCTYPE html>
 <html>
+<title>Email Security Log Alert</title>
 
 <body>
-    <h3>Name:</h3><span>{{.Name}}</span><br /><br />
-    <h3>Email:</h3><span>{{.Message}}</span><br />
+    <h2>Email Security Alert: {{.Mess}}</h2>
+    <span>Target: {{.Proto}} - {{.Host}} - {{.URI}}</span>
+    <hr>
+    <pre>Detail: <br>
+        Form: {{.Client_IP}}
+        Headers: {{.Headers}}
+        Body: {{.Body}}
+        Form: {{.Form}}
+        Happened At: {{.CreatedAt}}
+    </pre>
+    <p>Please access <a
+            href="http://localhost:3000/dashboards/sec_logs/{{.SecID}}">http://localhost:3000/dashboards/sec_logs/{{.SecID}}</a>
+        for more details </p>
 </body>
 
 </html>
