@@ -52,7 +52,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	v1 := server.RouterGroup.Group("api/v1")
 	authRouter(v1)
 	v1.Use(
-		middleware.AuthRequired(*container.JWT_Sercret),
+		middleware.AuthRequired(container.JWT_Sercret),
 	)
 
 	// user

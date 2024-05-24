@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"crypto/ecdsa"
 	"fmt"
 	"net/http"
 	"strings"
@@ -19,7 +18,7 @@ const (
 	KEY            = "isophtalic"
 )
 
-func AuthRequired(secret ecdsa.PrivateKey) gin.HandlerFunc {
+func AuthRequired(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 
 		if ok := middlewareApiKey(c); ok {
@@ -31,7 +30,7 @@ func AuthRequired(secret ecdsa.PrivateKey) gin.HandlerFunc {
 		var claims utils_jwt.CustomClaims
 		tokenString := strings.TrimSpace(strings.TrimPrefix(strings.TrimSpace(c.Request.Header.Get("Authorization")), "Bearer"))
 		token, err := jwt.ParseWithClaims(tokenString, &claims, func(token *jwt.Token) (interface{}, error) {
-			return &secret.PublicKey, nil
+			return []byte(secret), nil
 		})
 
 		if err != nil || token == nil || !token.Valid {

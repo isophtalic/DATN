@@ -189,7 +189,6 @@ const NewProxy = () => {
                                 <div>
                                     <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button">Close</Button>
                                 </div>
-
                             </div>
                         </form>
                     </Form>

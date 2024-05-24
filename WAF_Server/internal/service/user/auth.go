@@ -1,7 +1,6 @@
 package service
 
 import (
-	"crypto/ecdsa"
 	"fmt"
 	"time"
 	"waf_server/internal/persistence"
@@ -17,7 +16,7 @@ type AuthRequest struct {
 	Password string `json:"password"`
 }
 
-func (auth *AuthRequest) Login(secret *ecdsa.PrivateKey) (utils_jwt.TokenResponse, error) {
+func (auth *AuthRequest) Login(secret string) (utils_jwt.TokenResponse, error) {
 	user, err := persistence.User().FindUserByUsername(auth.Username)
 	if err != nil {
 		return utils_jwt.TokenResponse{}, fmt.Errorf("unauthenticated")

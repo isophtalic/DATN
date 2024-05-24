@@ -1,7 +1,6 @@
 package utils_jwt
 
 import (
-	"crypto/ecdsa"
 	"time"
 	"waf_server/internal/model"
 
@@ -18,15 +17,15 @@ type CustomClaims struct {
 	jwt.RegisteredClaims `json:",inline"`
 }
 
-func createAuthToken(claims CustomClaims, secret *ecdsa.PrivateKey) (TokenResponse, error) {
-	token := jwt.NewWithClaims(jwt.SigningMethodES256, claims)
-	tokenString, e := token.SignedString(secret)
+func createAuthToken(claims CustomClaims, secret string) (TokenResponse, error) {
+	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
+	tokenString, e := token.SignedString([]byte(secret))
 
 	return TokenResponse{tokenString}, e
 
 }
 
-func IssueAuthToken(u model.User, secret *ecdsa.PrivateKey, expiredAt time.Time) (TokenResponse, error) {
+func IssueAuthToken(u model.User, secret string, expiredAt time.Time) (TokenResponse, error) {
 	return createAuthToken(CustomClaims{
 		RegisteredClaims: jwt.RegisteredClaims{
 			Issuer:    "waf-dashboard",

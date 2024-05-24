@@ -42,9 +42,9 @@ const view = (pagination: PaginationState) => {
 }
 
 const newItem = (input: UserInput) => {
-    const { username, password, role } = pick(input, ['username', 'password', 'role'])
+    const { username, password, email } = pick(input, ['username', 'password', 'email'])
     return handleRequest<UserInput>(
-        () => request.post(`${userBaseURL}`, { username, password, role }, HeaderAuth),
+        () => request.post(`${userBaseURL}`, { username, password, email }, HeaderAuth),
         r => {
             return {
                 data: r.data.data,

@@ -88,7 +88,9 @@ const UserTable = () => {
 
     const columns = useMemo(() => getColumns({ onDelete }), [onDelete]);
 
-
+    const handleBtnCreate = () => {
+        router.push("/dashboards/users/new")
+    }
 
     return (
         <div>
@@ -107,6 +109,7 @@ const UserTable = () => {
                         </div>
                         <div className="w-full flex items-center mb-6">
                             <div className="flex-shrink-0 ml-auto">
+                                <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreate}>Create Accesslist</Button>
                             </div>
                         </div>
                     </div>

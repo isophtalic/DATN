@@ -114,7 +114,7 @@ const NewAccesslist = () => {
                             <ChevronRightIcon />
                         </BreadcrumbSeparator>
                         <BreadcrumbItem>
-                            <BreadcrumbLink href={"/dashboards/proxy/new"}>Create Proxy</BreadcrumbLink>
+                            <BreadcrumbLink href={"/dashboards/accesslist/new"}>Create Accesslist</BreadcrumbLink>
                         </BreadcrumbItem>
                     </BreadcrumbList>
                 </Breadcrumb>

@@ -1,10 +1,6 @@
 package configs
 
 import (
-	"crypto/ecdsa"
-	"crypto/elliptic"
-	"crypto/rand"
-	"fmt"
 	"waf_server/internal/model"
 
 	"github.com/BurntSushi/toml"
@@ -22,13 +18,13 @@ type Configs struct {
 	DB_Name         string
 	Kafka_Brockers  []string
 	Kafka_Partition int32
+	JWT_Sercret     string
 }
 
 type Container struct {
 	*Configs
-	JWT_Sercret *ecdsa.PrivateKey
-	MemStore    *model.MemoryStore
-	IPBlackist  *model.IPBlackist
+	MemStore   *model.MemoryStore
+	IPBlackist *model.IPBlackist
 }
 
 func InitContainer(path string) (Container, error) {
@@ -38,18 +34,11 @@ func InitContainer(path string) (Container, error) {
 		return Container{}, err
 	}
 
-	privateKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
-	if err != nil {
-		fmt.Println("Error generating ECDSA private key:", err)
-		return Container{}, err
-	}
-
 	// ip blackist can get in server or file blackist
 	ContainerVar = &Container{
-		Configs:     ConfigsVar,
-		JWT_Sercret: privateKey,
-		MemStore:    model.NewMemoryStore(),
-		IPBlackist:  model.NewIPBlacklist(),
+		Configs:    ConfigsVar,
+		MemStore:   model.NewMemoryStore(),
+		IPBlackist: model.NewIPBlacklist(),
 	}
 	return *ContainerVar, err
 }
