@@ -12,12 +12,16 @@ import Cookies from 'js-cookie'
 import { AUTHEN_TOKEN_KEY } from '@/apis/constants/const'
 
 import { ChevronDownIcon } from '@heroicons/react/24/outline'
+import useUserStore from '@/store/user'
 
 const ShadcnAvatar = () => {
 
     const onLogOut = () => {
         Cookies.remove(AUTHEN_TOKEN_KEY)
     }
+
+    const userStore = useUserStore()
+    console.log("🚀 ~ ShadcnAvatar ~ userStore:", userStore)
 
     return (
         <Popover >
@@ -29,18 +33,15 @@ const ShadcnAvatar = () => {
                     </Avatar>
                 </div>
                 <div className='flex flex-row items-center'>
-                    Admin
+                    {userStore.user.username}
                     <ChevronDownIcon className='w-[20px] h-[20px]' />
                 </div>
 
             </PopoverTrigger>
-            <PopoverContent>
-                <span>admin@cyradar.com</span>
-                <ul >
-                    <li>
-                        <Link href="/auth/login" onClick={onLogOut}>Log out</Link>
-                    </li>
-                </ul>
+            <PopoverContent className='p-0'>
+                <div>
+                    <Link href="/auth/login" onClick={onLogOut} className='w-full inline-block p-3 rounded-md border shadow font-bold' style={{ backgroundColor: "rgb(53, 162, 235)", color: "#fff" }}>Log out</Link>
+                </div>
             </PopoverContent>
         </Popover>
     )

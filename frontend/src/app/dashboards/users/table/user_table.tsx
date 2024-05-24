@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import UserAPI from '@/apis/users'
 import { toast } from '@/components/ui/use-toast'
+import useUserStore from '@/store/user'
 
 async function getData(pagination: PaginationState): Promise<any> {
     let result: any[] = []
@@ -49,6 +50,8 @@ const UserTable = () => {
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
     const [data, setData] = useState<UserInput[]>([]);
     const [pageCount, setPageCount] = useState<number>(1);
+
+    const userStore = useUserStore()
 
     // const initData = await getData(initialStatePagination)
 
@@ -92,6 +95,8 @@ const UserTable = () => {
         router.push("/dashboards/users/new")
     }
 
+    const validateUser = userStore.user.id !== "" && userStore.user.role == 0
+
     return (
         <div>
 
@@ -109,7 +114,11 @@ const UserTable = () => {
                         </div>
                         <div className="w-full flex items-center mb-6">
                             <div className="flex-shrink-0 ml-auto">
-                                <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreate}>Create Accesslist</Button>
+                                {validateUser ? (
+                                    <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreate}>Create User</Button>
+                                ) : (
+                                    <></>
+                                )}
                             </div>
                         </div>
                     </div>
@@ -123,7 +132,6 @@ const UserTable = () => {
                         </div>
                     </div>
                 ) : (
-
                     <DataTable columns={columns} data={data} pageCount={pageCount} pagination={pagination} onSetPagination={handlePaginationChange} />
                 )}
             </div>

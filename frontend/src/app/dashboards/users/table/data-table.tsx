@@ -28,6 +28,7 @@ import {
 
 
 import { Button } from "@/components/ui/button"
+import useUserStore from "@/store/user"
 
 interface DataTableProps<UserInput, TValue> {
     columns: ColumnDef<UserInput, TValue>[]

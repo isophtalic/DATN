@@ -27,6 +27,16 @@ declare global {
         oldpass: string
         newpass: string
     }
+
+    interface UserJwtPayload {
+        role: number,
+        iss: string,
+        sub: string,
+        aud: string[],
+        exp: number,
+        iat: number,
+        jti: string
+    }
 }
 
 export { };

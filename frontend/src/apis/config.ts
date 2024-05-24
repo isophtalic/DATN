@@ -1,9 +1,8 @@
 import dotenv from 'dotenv'
-
 dotenv.config();
 
-export const BASE_URL = process.env.API_BASE_URL || "http://127.0.0.1:8123"
-export const API_KEY = process.env.API_KEY || "aXNvcGh0YWxpYy5jeXJhZGFy"
+export const BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8123"
+export const API_KEY = process.env.NEXT_PUBLIC_API_KEY || "aXNvcGh0YWxpYy5jeXJhZGFy"
 export const V1 = `${BASE_URL}/api/v1`
 export const authBaseURL = `${V1}/auth`
 export const proxyBaseURL = `${V1}/proxy`

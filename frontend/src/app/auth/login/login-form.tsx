@@ -20,6 +20,7 @@ import { toast } from "@/components/ui/use-toast"
 import { ToastAction } from "@radix-ui/react-toast"
 import { useRouter } from "next/navigation"
 import useUserStore from "@/store/user";
+import { VerifyAuth } from "@/lib/jwt"
 
 
 const formSchema = z.object({
@@ -54,6 +55,14 @@ const LoginForm = () => {
             }
             toast({
                 description: "Login sucessfully.",
+            })
+
+            let payload = await VerifyAuth(response.data.token)
+
+            userStore.update({
+                id: payload.jti,
+                role: payload.role,
+                username: payload.sub,
             })
 
             userStore.login()

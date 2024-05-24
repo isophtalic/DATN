@@ -1,7 +1,4 @@
 import { PaginationState } from "@tanstack/react-table";
-import dotenv from 'dotenv'
-
-dotenv.config();
 
 export const BlacklistStatus = {
     ALLOW: 0,
@@ -19,5 +16,3 @@ export const InitialPaginationState: PaginationState = {
 }
 
 export const DebounceValue = 800
-
-export const Secret = process.env.JWT_SECRET
