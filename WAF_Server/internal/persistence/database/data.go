@@ -42,7 +42,7 @@ func (repo *PostgresDataProvider) List(pgn *pagination.Pagination[model.Data], v
 	if len(strings.TrimSpace(valueSearch)) == 0 {
 		tx = database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database)).Find(&results)
 	} else {
-		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+		tx = database.Where("name LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database.Where("name LIKE ?", "%"+valueSearch+"%"))).Find(&results)
 	}
 	pgn.Records = results
 
@@ -76,9 +76,19 @@ func (repo *PostgresDataProvider) DeleteBySecRuleID(id string) error {
 func (repo *PostgresDataProvider) FindBySecRuleID(sr_id string, pgn *pagination.Pagination[model.Data]) (*pagination.Pagination[model.Data], error) {
 	database := repo.db
 
-	result := make([]model.Data, 0)
-	tx := database.Where(&model.Data{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.Data{}, pgn, database)).Find(&result)
-	pgn.Records = result
+	results := make([]model.Data, 0)
+	var tx *gorm.DB
+	valueSearch := pgn.Search
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = database.Where(&model.Data{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.Data{}, pgn, database)).Find(&results)
+	} else {
+		tx = database.
+			Where(&model.Data{SecRuleID_FK: sr_id}).
+			Where("name LIKE ?", "%"+valueSearch+"%").
+			Scopes(pagination.Paginate(&model.Data{}, pgn, database.Where(&model.Data{SecRuleID_FK: sr_id}).Where("name LIKE ?", "%"+valueSearch+"%"))).Find(&results)
+	}
+
+	pgn.Records = results
 
 	if tx.Error != nil {
 		return &pagination.Pagination[model.Data]{}, tx.Error

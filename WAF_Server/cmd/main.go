@@ -36,8 +36,6 @@ func main() {
 	}
 
 	switch args[1] {
-	case "kafka":
-		KafkaServer()
 	case "serve":
 		Server()
 	case "setup":

@@ -121,9 +121,7 @@ const SecrulesetTable = () => {
     }, [debouncedSearchTerm])
 
     useEffect(() => {
-        fetchData()
-
-        console.log("🚀 ~ SecrulesetTable ~ pagination:", pagination)
+        search()
     }, [pagination])
 
     const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);

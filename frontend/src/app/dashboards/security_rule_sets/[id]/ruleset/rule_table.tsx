@@ -101,13 +101,14 @@ const RuleSetTable = () => {
     }
 
     const search = async () => {
-        setLoading(false);
-        var newData
+        setLoading(true);
+        var data
         try {
-            newData = await searchData(secrule_id, pagination, valueSearch)
-            if (newData) {
-                setPageCount(newData.total_pages ?? 1);
-                setData(newData.records ?? []);
+            data = await searchData(secrule_id, pagination, valueSearch)
+            console.log("🚀 ~ search ~ data:", data)
+            if (data) {
+                setPageCount(data.total_pages ?? 1);
+                setData(data.records ?? []);
             }
         } catch (error) {
             console.log("🚀 ~ fetchData ~ error:", error)
@@ -118,17 +119,16 @@ const RuleSetTable = () => {
     }
 
     const handleSearch = (e: any) => {
-        console.log(e.target.value)
         setValueSearch(e.target.value);
     };
 
     useEffect(() => {
         search()
-    }, [debouncedSearchTerm])
+    }, [debouncedSearchTerm, pagination])
 
     useEffect(() => {
 
-        fetchData()
+        search()
     }, [pagination])
 
     const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);

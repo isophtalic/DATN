@@ -42,7 +42,7 @@ func (repo *PostgresRuleSetProvider) List(pgn *pagination.Pagination[model.RuleS
 	if len(strings.TrimSpace(valueSearch)) == 0 {
 		tx = database.Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
 	} else {
-		tx = database.Where("file LIKE ?", "%"+valueSearch+"%").Or("id LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&results)
+		tx = database.Where("file LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database.Where("file LIKE ?", "%"+valueSearch+"%"))).Find(&results)
 	}
 	pgn.Records = results
 
@@ -77,7 +77,13 @@ func (repo *PostgresRuleSetProvider) FindBySecRuleID(sr_id string, pgn *paginati
 	database := repo.db
 
 	result := make([]model.RuleSet, 0)
-	tx := database.Where(&model.RuleSet{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&result)
+	var tx *gorm.DB
+	valueSearch := pgn.Search
+	if len(strings.TrimSpace(valueSearch)) == 0 {
+		tx = database.Where(&model.RuleSet{SecRuleID_FK: sr_id}).Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database)).Find(&result)
+	} else {
+		tx = database.Where(&model.RuleSet{SecRuleID_FK: sr_id}).Where("file LIKE ?", "%"+valueSearch+"%").Scopes(pagination.Paginate(&model.RuleSet{}, pgn, database.Where(&model.RuleSet{SecRuleID_FK: sr_id}).Where("file LIKE ?", "%"+valueSearch+"%"))).Find(&result)
+	}
 	pgn.Records = result
 
 	if tx.Error != nil {
