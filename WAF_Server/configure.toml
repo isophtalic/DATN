@@ -1,7 +1,17 @@
+# Core
+DASHBOARD = "127.0.0.1:3000"
+JWT_Sercret = "LjNpCp5z9H"
+Port = "8090"
+
+# Database
 DB_Host = "127.0.0.1"
 DB_Name = "waf"
 DB_Password = "password"
 DB_Port = "5432"
 DB_User = "postgres"
-JWT_Sercret = "LjNpCp5z9H"
-Port = "8090"
+
+# Mail
+EMAIL_PASSWORD = "uaoa aeyl hypd gwkc"
+EMAIL_SENDER = "isophtalic@gmail.com"
+SMTP_HOST = "smtp.gmail.com"
+SMTP_PORT = "smtp.gmail.com"

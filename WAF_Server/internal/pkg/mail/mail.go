@@ -6,7 +6,7 @@ import (
 	"net/smtp"
 	"strings"
 	"text/template"
-	"waf_server/internal/model"
+	timescale_model "waf_server/internal/model/timescale"
 
 	"github.com/zerobounce/zerobouncego"
 )
@@ -16,7 +16,7 @@ const (
 	STATUS_INVALID    = "invalid"
 	SMTP_HOST_DEFAULT = "smtp.gmail.com"
 	SMTP_PORT_DEFAULT = "587"
-	TEMPLATE_PATH     = "./template/template.html"
+	TEMPLATE_PATH     = "../mail/template/template.html"
 )
 
 type MailPackage struct {
@@ -32,8 +32,8 @@ func NewMailPackage(register, password, zerobounce_api, host, port string) *Mail
 		host = SMTP_HOST_DEFAULT
 	}
 
-	if strings.TrimSpace(host) == "" {
-		host = SMTP_PORT_DEFAULT
+	if strings.TrimSpace(port) == "" {
+		port = SMTP_PORT_DEFAULT
 	}
 
 	return &MailPackage{
@@ -51,28 +51,47 @@ func (m *MailPackage) VerifyMail(mail string) bool {
 	return response.IsValid()
 }
 
-func (m *MailPackage) SendEmail(actions model.Actions, receiver []string) error {
+type ObjectNotify struct {
+	timescale_model.SecLog
+	Dashboard string
+}
+
+func (m *MailPackage) SendEmail(log ObjectNotify, receiver []string, subject string) error {
 	from := m.register
 	password := m.password
 
 	auth := smtp.PlainAuth("", from, password, m.smtp_host)
-	t, err := template.ParseFiles(TEMPLATE_PATH)
+
+	// Parse the HTML template
+	t, err := template.ParseFiles(TEMPLATE_PATH) // Ensure TEMPLATE_PATH is defined or replaced
 	if err != nil {
-		return err
+		return fmt.Errorf("error parsing template: %w", err)
 	}
 
 	var body bytes.Buffer
 
-	mimeHeaders := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
-	body.Write([]byte(fmt.Sprintf("Notify ! \n%s\n\n", mimeHeaders)))
+	// Write headers
+	body.Write([]byte(fmt.Sprintf("From: %s\r\n", from)))
+	body.Write([]byte(fmt.Sprintf("To: %s\r\n", strings.Join(receiver, ", "))))
+	body.Write([]byte(fmt.Sprintf("Subject: %s\r\n", subject)))
+	body.Write([]byte("MIME-Version: 1.0\r\n"))
+	body.Write([]byte("Content-Type: text/html; charset=\"UTF-8\"\r\n"))
+	body.Write([]byte("\r\n")) // End of headers
 
-	t.Execute(&body, actions)
-
-	dns := fmt.Sprintf("%s:%s", m.smtp_host, m.smtp_port)
-	err = smtp.SendMail(dns, auth, from, receiver, body.Bytes())
+	// Write the email body
+	err = t.Execute(&body, log)
 	if err != nil {
-		return err
+		return fmt.Errorf("error executing template: %w", err)
 	}
 
+	dns := fmt.Sprintf("%s:%s", m.smtp_host, m.smtp_port)
+	fmt.Printf("Attempting to send mail to %v via %s\n", receiver, dns) // Debug print
+
+	err = smtp.SendMail(dns, auth, from, receiver, body.Bytes())
+	if err != nil {
+		return fmt.Errorf("error sending mail: %w", err)
+	}
+
+	fmt.Println("Mail sent successfully!")
 	return nil
 }

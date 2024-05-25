@@ -18,22 +18,6 @@ type SecLog struct {
 	SecureLogs string    `json:"secure_logs" gorm:"type:text;not null"`
 }
 
-type SecLogEmail struct {
-	SecID      string      `json:"sec_id" gorm:"type:uuid;not null"`
-	CreatedAt  time.Time   `json:"created_at" gorm:"type:timestamptz;unique;not null"`
-	ClientIP   string      `json:"client_ip" gorm:"type:TEXT;not null"`
-	Host       string      `json:"host" gorm:"type:TEXT;not null"`
-	Method     string      `json:"method" gorm:"type:TEXT;not null"`
-	Proto      string      `json:"proto" gorm:"type:TEXT;not null"`
-	URI        string      `json:"uri" gorm:"type:TEXT;not null"`
-	Headers    string      `json:"headers" gorm:"type:text;not null"`
-	Body       string      `json:"body" gorm:"type:text;not null"`
-	Form       string      `json:"form" gorm:"type:text"`
-	Mess       string      `json:"mess" gorm:"type:TEXT;not null"`
-	RuleID     int         `json:"rule_id" gorm:"type:integer;not null"`
-	SecureLogs SecurityLog `json:"secure_logs" gorm:"type:text;not null"`
-}
-
 type SecurityLog struct {
 	RuleEngine bool   `json:"rule_engine" gorm:"column:rule_engine;type:bool;not null"`
 	Filename   string `json:"filename" gorm:"type:TEXT;not null"`

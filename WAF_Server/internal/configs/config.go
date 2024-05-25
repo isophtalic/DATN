@@ -10,15 +10,18 @@ var ConfigsVar *Configs
 var ContainerVar *Container
 
 type Configs struct {
-	Port            string
-	DB_User         string
-	DB_Password     string
-	DB_Host         string
-	DB_Port         string
-	DB_Name         string
-	Kafka_Brockers  []string
-	Kafka_Partition int32
-	JWT_Sercret     string
+	Port           string
+	DASHBOARD      string
+	DB_User        string
+	DB_Password    string
+	DB_Host        string
+	DB_Port        string
+	DB_Name        string
+	JWT_Sercret    string
+	EMAIL_SENDER   string
+	EMAIL_PASSWORD string
+	SMTP_HOST      string
+	SMTP_PORT      string
 }
 
 type Container struct {

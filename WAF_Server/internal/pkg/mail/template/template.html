@@ -1,4 +1,3 @@
-<!-- template.html -->
 <!DOCTYPE html>
 <html>
 <title>Email Security Log Alert</title>
@@ -7,16 +6,14 @@
     <h2>Email Security Alert: {{.Mess}}</h2>
     <span>Target: {{.Proto}} - {{.Host}} - {{.URI}}</span>
     <hr>
-    <pre>Detail: <br>
-        Form: {{.Client_IP}}
-        Headers: {{.Headers}}
-        Body: {{.Body}}
-        Form: {{.Form}}
-        Happened At: {{.CreatedAt}}
-    </pre>
-    <p>Please access <a
-            href="http://localhost:3000/dashboards/sec_logs/{{.SecID}}">http://localhost:3000/dashboards/sec_logs/{{.SecID}}</a>
-        for more details </p>
+    <div>Detail: </div>
+    <div> From: {{.ClientIP}}</div>
+    <div>Headers: {{.Headers}}</div>
+    <div>Body: {{.Body}}</div>
+    <div> Form: {{.Form}}</div>
+    <div>Happened At: {{.CreatedAt}}</div>
+    <div>Please click <a href="http://{{.Dashboards}}/dashboards/sec_logs/{{.SecID}}">here</a>
+        for more details </div>
 </body>
 
 </html>

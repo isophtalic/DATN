@@ -2,8 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"log"
 	"time"
+	"waf_server/internal/configs"
 	timescale_model "waf_server/internal/model/timescale"
+	mail_service "waf_server/internal/service/mail"
 	securitylogs_service "waf_server/internal/service/securitylogs"
 
 	"github.com/gin-gonic/gin"
@@ -16,6 +19,8 @@ func CreateSeclog(c *gin.Context) {
 		ResponseError(c, err)
 		return
 	}
+
+	config := configs.GetConfigVar()
 
 	arrByteSeclogs, err := json.Marshal(cmd.SecureLogs)
 	if err != nil {
@@ -36,6 +41,15 @@ func CreateSeclog(c *gin.Context) {
 		Mess:       cmd.Mess,
 		RuleID:     cmd.RuleID,
 		SecureLogs: string(arrByteSeclogs),
+	}
+
+	if cmd.SecureLogs[0].Severity <= 2 {
+		mailSevice := mail_service.NewMailService(config)
+
+		err := mailSevice.NotifyToAdmin(seclogs)
+		if err != nil {
+			log.Println(err)
+		}
 	}
 
 	err = securitylogs_service.CreateSeclog(seclogs)
