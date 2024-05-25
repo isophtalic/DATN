@@ -8,20 +8,22 @@ import (
 )
 
 type MailService struct {
-	sender    string
-	password  string
-	smtp_host string
-	smtp_port string
-	dashboard string
+	sender       string
+	password     string
+	smtp_host    string
+	smtp_port    string
+	dashboard    string
+	templatePath string
 }
 
 func NewMailService(c *configs.Configs) *MailService {
 	return &MailService{
-		sender:    c.EMAIL_SENDER,
-		password:  c.EMAIL_PASSWORD,
-		smtp_host: c.SMTP_HOST,
-		smtp_port: c.SMTP_PORT,
-		dashboard: c.DASHBOARD,
+		sender:       c.EMAIL_SENDER,
+		password:     c.EMAIL_PASSWORD,
+		smtp_host:    c.SMTP_HOST,
+		smtp_port:    c.SMTP_PORT,
+		dashboard:    c.DASHBOARD,
+		templatePath: c.MAIL_TEMPLATE_PATH,
 	}
 }
 
@@ -31,7 +33,7 @@ func (s *MailService) NotifyToAdmin(cmd timescale_model.SecLog) error {
 		return nil
 	}
 
-	producer := mail.NewMailPackage(s.sender, s.password, "", s.smtp_host, s.smtp_port)
+	producer := mail.NewMailPackage(s.sender, s.password, "", s.smtp_host, s.smtp_port, s.templatePath)
 	subject := "Notify !"
 
 	obj := mail.ObjectNotify{

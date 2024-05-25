@@ -25,9 +25,10 @@ type MailPackage struct {
 	password       string
 	smtp_host      string
 	smtp_port      string
+	templatePath   string
 }
 
-func NewMailPackage(register, password, zerobounce_api, host, port string) *MailPackage {
+func NewMailPackage(register, password, zerobounce_api, host, port, templatePath string) *MailPackage {
 	if strings.TrimSpace(host) == "" {
 		host = SMTP_HOST_DEFAULT
 	}
@@ -42,6 +43,7 @@ func NewMailPackage(register, password, zerobounce_api, host, port string) *Mail
 		password:       password,
 		smtp_host:      host,
 		smtp_port:      port,
+		templatePath:   templatePath,
 	}
 }
 
@@ -63,7 +65,7 @@ func (m *MailPackage) SendEmail(log ObjectNotify, receiver []string, subject str
 	auth := smtp.PlainAuth("", from, password, m.smtp_host)
 
 	// Parse the HTML template
-	t, err := template.ParseFiles(TEMPLATE_PATH) // Ensure TEMPLATE_PATH is defined or replaced
+	t, err := template.ParseFiles(m.templatePath) // Ensure TEMPLATE_PATH is defined or replaced
 	if err != nil {
 		return fmt.Errorf("error parsing template: %w", err)
 	}

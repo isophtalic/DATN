@@ -10,18 +10,19 @@ var ConfigsVar *Configs
 var ContainerVar *Container
 
 type Configs struct {
-	Port           string
-	DASHBOARD      string
-	DB_User        string
-	DB_Password    string
-	DB_Host        string
-	DB_Port        string
-	DB_Name        string
-	JWT_Sercret    string
-	EMAIL_SENDER   string
-	EMAIL_PASSWORD string
-	SMTP_HOST      string
-	SMTP_PORT      string
+	Port               string
+	DASHBOARD          string
+	DB_User            string
+	DB_Password        string
+	DB_Host            string
+	DB_Port            string
+	DB_Name            string
+	JWT_Sercret        string
+	EMAIL_SENDER       string
+	EMAIL_PASSWORD     string
+	SMTP_HOST          string
+	SMTP_PORT          string
+	MAIL_TEMPLATE_PATH string
 }
 
 type Container struct {
