@@ -45,11 +45,12 @@ func CreateSeclog(c *gin.Context) {
 
 	if cmd.SecureLogs[0].Severity <= 2 {
 		mailSevice := mail_service.NewMailService(config)
-
-		err := mailSevice.NotifyToAdmin(seclogs)
-		if err != nil {
-			log.Println(err)
-		}
+		go func() {
+			err := mailSevice.NotifyToAdmin(seclogs)
+			if err != nil {
+				log.Println(err)
+			}
+		}()
 	}
 
 	err = securitylogs_service.CreateSeclog(seclogs)

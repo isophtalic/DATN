@@ -10,10 +10,18 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import BarChartCustom from '../chart/bar'
 import { GetArrayDataByField } from '@/utilities/utils'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import { FunnelIcon } from '@heroicons/react/24/outline'
 
-const requestDataOverview = async (): Promise<any> => {
+const requestDataOverview = async (time_range: string): Promise<any> => {
     try {
-        const resp = await OverviewAPI.view()
+        const resp = await OverviewAPI.view(time_range)
         return resp?.data
     } catch (error) {
         console.log(error);
@@ -22,6 +30,7 @@ const requestDataOverview = async (): Promise<any> => {
 
 const TotalComponent = () => {
     const [loading, setLoading] = useState<boolean>(true);
+    const [time_range, setTime_range] = useState<string>("7 days")
     const [top_attack_type, set_top_attack_type] = useState<EventCount[]>([{
         field: "",
         count: 0,
@@ -56,7 +65,7 @@ const TotalComponent = () => {
         const fetchData = async () => {
             setLoading(true);
             try {
-                const dataServer = await requestDataOverview()
+                const dataServer = await requestDataOverview(time_range)
                 console.log(dataServer)
                 if (dataServer) {
                     setData(dataServer)
@@ -68,10 +77,28 @@ const TotalComponent = () => {
             }
         }
         fetchData()
-    }, [])
+    }, [time_range])
+
+    const valueTime = ["7 days", "30 days", "2 months", "6 months"]
 
     return (
         <div>
+            <div className='flex justify-end'>
+                <div className='flex flex-row w-1/6 gap-2'>
+                    <FunnelIcon className='w-8 h-8' />
+                    <Select onValueChange={(value) => setTime_range(value)} defaultValue='7 days'>
+                        <SelectTrigger>
+                            <SelectValue placeholder="Select status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                            {valueTime.map((e: string, i: number) => (
+                                <SelectItem key={i} value={e} className='cursor-pointer'>{e}</SelectItem>
+                            ))}
+                            {/* <SelectItem key={1} value={"1"}>deny</SelectItem> */}
+                        </SelectContent>
+                    </Select>
+                </div>
+            </div>
             {
                 loading ? (
                     <div className="flex flex-col space-y-3 mt-20 ml-20">
@@ -82,7 +109,7 @@ const TotalComponent = () => {
                         </div>
                     </div>
                 ) : (
-                    <div className='grid grid-cols-2 gap-10'>
+                    <div className='grid grid-cols-2 gap-10 mt-8'>
                         <div className='p-8 shadow-lg' style={{ backgroundColor: " #fff", borderRadius: "20px" }}>
                             <div className='font-bold'>Total Hosts</div>
                             <div className="flex flex-row items-center mt-9">

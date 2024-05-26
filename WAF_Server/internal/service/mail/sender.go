@@ -37,8 +37,8 @@ func (s *MailService) NotifyToAdmin(cmd timescale_model.SecLog) error {
 	subject := "Notify !"
 
 	obj := mail.ObjectNotify{
-		SecLog:    cmd,
-		Dashboard: s.dashboard,
+		SecLog:     cmd,
+		Dashboards: s.dashboard,
 	}
 
 	err = producer.SendEmail(obj, []string{admin.Email}, subject)

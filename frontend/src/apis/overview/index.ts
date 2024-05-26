@@ -24,9 +24,9 @@ const detail = (id: string) => {
 }
 
 
-const view = () => {
+const view = (_timerange: string = "7 days") => {
     return handleRequest<Overview>(
-        () => request.get(`${overviewBaseURL}`, HeaderAuth),
+        () => request.get(`${overviewBaseURL}?timerange=${_timerange}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

@@ -55,7 +55,7 @@ func (m *MailPackage) VerifyMail(mail string) bool {
 
 type ObjectNotify struct {
 	timescale_model.SecLog
-	Dashboard string
+	Dashboards string
 }
 
 func (m *MailPackage) SendEmail(log ObjectNotify, receiver []string, subject string) error {

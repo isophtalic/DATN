@@ -30,7 +30,7 @@ const view = (pagination: PaginationState, _valueSearch: string = "") => {
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${ProxyViewerEndpoint}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
+        () => request.get(`${ProxyViewerEndpoint}?page=${param.page}&limit=${param.limit}&search=${_valueSearch}&sort=${"created_at desc"}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data

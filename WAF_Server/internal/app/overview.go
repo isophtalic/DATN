@@ -9,7 +9,11 @@ import (
 type OverviewHandler struct{}
 
 func (*OverviewHandler) Overview(c *gin.Context) {
-	data, err := service.ViewDefault()
+	timerange := c.Query("timerange")
+	if len(timerange) == 0 {
+		timerange = "7 days"
+	}
+	data, err := service.ViewDefault(timerange)
 	if err != nil {
 		ResponseError(c, err)
 		return

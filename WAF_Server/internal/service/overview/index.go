@@ -16,7 +16,7 @@ type Overview struct {
 	TopBySourceAtk []model.EventCount `json:"top_by_source_attack"`
 }
 
-func ViewDefault() (*Overview, error) {
+func ViewDefault(timerange string) (*Overview, error) {
 	totalHost, err := persistence.Proxy().Count()
 	if err != nil {
 		return &Overview{}, err
@@ -27,22 +27,22 @@ func ViewDefault() (*Overview, error) {
 		return &Overview{}, err
 	}
 
-	top_attack_type, err := OverviewByField("mess", defaultTime)
+	top_attack_type, err := OverviewByField("mess", timerange)
 	if err != nil {
 		return &Overview{}, err
 	}
 
-	top_attack_rule, err := OverviewByField("rule_id", defaultTime)
+	top_attack_rule, err := OverviewByField("rule_id", timerange)
 	if err != nil {
 		return &Overview{}, err
 	}
 
-	top_attack_host, err := OverviewByField("host", defaultTime)
+	top_attack_host, err := OverviewByField("host", timerange)
 	if err != nil {
 		return &Overview{}, err
 	}
 
-	top_attack_source, err := OverviewByField("client_ip", defaultTime)
+	top_attack_source, err := OverviewByField("client_ip", timerange)
 	if err != nil {
 		return &Overview{}, err
 	}

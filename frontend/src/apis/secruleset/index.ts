@@ -30,7 +30,7 @@ const showRuleSets = (id: string, pagination: PaginationState, _valueSearch: str
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/ruleset?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/ruleset?page=${param.page}&limit=${param.limit}&search=${_valueSearch}&sort=${"created_at desc"}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -45,7 +45,7 @@ const showDataRule = (id: string, pagination: PaginationState, _valueSearch: str
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/data?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/data?page=${param.page}&limit=${param.limit}&search=${_valueSearch}&sort=${"created_at desc"}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
@@ -60,7 +60,7 @@ const showProxies = (id: string, pagination: PaginationState, _valueSearch: stri
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${secruleBaseURL}/${id}/proxies?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
+        () => request.get(`${secruleBaseURL}/${id}/proxies?page=${param.page}&limit=${param.limit}&search=${_valueSearch}&sort=${"created_at desc"}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data,
