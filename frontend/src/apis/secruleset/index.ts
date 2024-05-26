@@ -53,6 +53,22 @@ const showDataRule = (id: string, pagination: PaginationState, _valueSearch: str
         },
     )
 }
+
+const showProxies = (id: string, pagination: PaginationState, _valueSearch: string = "") => {
+    const param = {
+        page: pagination.pageIndex + 1,
+        limit: pagination.pageSize
+    }
+    return handleRequest<any>(
+        () => request.get(`${secruleBaseURL}/${id}/proxies?page=${param.page}&limit=${param.limit}&search=${_valueSearch}`, HeaderAuth),
+        r => {
+            return {
+                data: r.data.data,
+            }
+        },
+    )
+}
+
 const view = (pagination: PaginationState, _valueSearch: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,

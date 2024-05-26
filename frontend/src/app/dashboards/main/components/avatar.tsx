@@ -29,7 +29,7 @@ const ShadcnAvatar = () => {
                 <div className='grid justify-items-center'>
                     <Avatar >
                         <AvatarFallback />
-                        <AvatarImage src="https://avatars.githubusercontent.com/u/10513364?v=4" />
+                        <AvatarImage src="https://w7.pngwing.com/pngs/605/466/png-transparent-shut-down-close-abandoned-icon-power-on-power-off-thumbnail.png" />
                     </Avatar>
                 </div>
                 <div className='flex flex-row items-center'>

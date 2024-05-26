@@ -68,8 +68,8 @@ interface DataPage {
 const NewAccesslist = () => {
     const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
-    const [isShow, setIsShow] = useState<boolean>(true)
-    const [isShowCF, setIsShowCF] = useState<boolean>(true)
+    const [isShow, setIsShow] = useState<boolean>(false)
+    const [isShowCF, setIsShowCF] = useState<boolean>(false)
 
     const form = useForm<z.infer<typeof formSchema>>({
         resolver: zodResolver(formSchema),

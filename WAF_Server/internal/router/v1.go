@@ -60,13 +60,12 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	userRouter.GET("", userHandler.ListUser)
 	userRouter.POST("", userHandler.CreateAccount)
 	userRouter.POST("/:id/change-password", userHandler.ChangePassword)
-	userRouter.POST("/:id/delete", userHandler.DeleteByID)
+	userRouter.DELETE("/:id/delete", userHandler.DeleteByID)
 
 	// proxy
 	proxyRouter := v1.Group("/proxy")
 	proxyRouter.GET("/", proxyhandler.ListProxy)
 	proxyRouter.POST("/", proxyhandler.CreateProxy)
-	proxyRouter.GET("/:id/secrule", secrulesetHandler.FindByProxyID)
 	proxyRouter.GET("/:id/source", sourceHandler.FindByProxyID)
 	// proxyRouter.GET("/:id/accesslist", accessListHandler.FindByProxyID)
 	proxyRouter.DELETE("/:id", proxyhandler.DeleteByID)
@@ -111,6 +110,7 @@ func NewApiV1(container configs.Container) *gin.Engine {
 	srsRouter.GET("/:id", secrulesetHandler.FindByID)
 	srsRouter.GET("/:id/ruleset", rsHandler.FindBySecID)
 	srsRouter.GET("/:id/data", dataHandler.FindBySecID)
+	srsRouter.GET("/:id/proxies", secrulesetHandler.FindProxy)
 	srsRouter.PATCH("/:id", secrulesetHandler.UpdateByID)
 	srsRouter.DELETE("/:id", secrulesetHandler.DeleteByID)
 

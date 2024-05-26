@@ -26,13 +26,13 @@ const detail = (id: string) => {
 
 
 
-const view = (pagination: PaginationState) => {
+const view = (pagination: PaginationState, _valueSeach: string = "") => {
     const param = {
         page: pagination.pageIndex + 1,
         limit: pagination.pageSize
     }
     return handleRequest<any>(
-        () => request.get(`${userBaseURL}?page=${param.page}&limit=${param.limit}`, HeaderAuth),
+        () => request.get(`${userBaseURL}?page=${param.page}&limit=${param.limit}&search=${_valueSeach}`, HeaderAuth),
         r => {
             return {
                 data: r.data.data
@@ -54,8 +54,9 @@ const newItem = (input: UserInput) => {
 }
 
 const changePassword = (id: string, input: ChangePassword) => {
+    console.log("🚀 ~ changePassword ~ HeaderAuth:", HeaderAuth)
     return handleRequest<ChangePassword>(
-        () => request.post(`${userBaseURL}/${id}/change-password`, HeaderAuth),
+        () => request.post(`${userBaseURL}/${id}/change-password`, input, HeaderAuth),
         r => {
             return {
                 data: r.data.data,

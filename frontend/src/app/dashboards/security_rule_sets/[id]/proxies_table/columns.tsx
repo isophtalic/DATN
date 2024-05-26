@@ -4,17 +4,8 @@ import { ColumnDef } from "@tanstack/react-table"
 import { Button } from "@/components/ui/button"
 
 import { ArrowUpDown, MoreHorizontal } from "lucide-react"
-import { useRouter } from "next/router"
-
-import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import ActionsCell from "./actions_cell"
+
 
 type ProxyColumnsProps = {
     onDeleteItem: (id: string) => void
@@ -36,7 +27,7 @@ export const getProxyColumns = ({ onDeleteItem }: ProxyColumnsProps): ColumnDef<
         header: ({ column }) => {
             return (
                 <Button
-                    className="w-full justify-start pl-0"
+                    className="w-full"
                     variant="ghost"
                     onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
                 >

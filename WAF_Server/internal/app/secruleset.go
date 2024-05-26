@@ -50,16 +50,16 @@ func (app *SecRuleSetHandler) FindByID(c *gin.Context) {
 	ResponseJSON(c, "", result)
 }
 
-func (app *SecRuleSetHandler) FindByProxyID(c *gin.Context) {
+func (app *SecRuleSetHandler) FindProxy(c *gin.Context) {
 	id := c.Param("id")
-
-	result, err := serviceSRS.FindByProxyID(id)
+	result, err := serviceSRS.FindProxyUseSecRule(id, c)
 	if err != nil {
 		ResponseError(c, err)
 		return
 	}
 
-	ResponseJSON(c, "", result)
+	ResponseJSON(c, "Successfully", result)
+
 }
 
 func (app *SecRuleSetHandler) UpdateByID(c *gin.Context) {

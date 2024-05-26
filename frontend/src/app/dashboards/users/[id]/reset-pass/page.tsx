@@ -1,6 +1,6 @@
 'use client'
 import React, { useState, useEffect } from 'react'
-import { PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
+import { EyeIcon, EyeSlashIcon, PencilSquareIcon, TrashIcon } from '@heroicons/react/24/outline'
 import { Checkbox } from "@/components/ui/checkbox"
 
 
@@ -28,8 +28,9 @@ import { ChevronRightIcon } from '@heroicons/react/24/outline'
 
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { useParams } from 'next/navigation'
+import { useParams,useRouter } from 'next/navigation'
 import UserAPI from '@/apis/users'
+import { toast } from '@/components/ui/use-toast'
 
 const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/;
 
@@ -65,7 +66,11 @@ interface DataPage {
 
 const NewProxy = () => {
     const param = useParams()
+    const router = useRouter()
     const [loading, setLoading] = useState<boolean>(true);
+    const [isShow1, setIsShow1] = useState<boolean>(false)
+    const [isShow2, setIsShow2] = useState<boolean>(false)
+    const [isShow3, setIsShow3] = useState<boolean>(false)
 
 
     const form = useForm<z.infer<typeof formSchema>>({
@@ -84,7 +89,23 @@ const NewProxy = () => {
             oldpass: values.current_password,
             newpass: values.new_password
         }
-        UserAPI.changePassword(idUser as string, input)
+        try {
+            let res = await UserAPI.changePassword(idUser as string, input)
+            if (res.success) {
+                toast({
+                    description: "Successfully"
+                })
+                return
+            }
+
+            throw res.message
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Something want wrong",
+                description: `${error}`
+            })
+        }
     }
 
     let userid = param.id as string
@@ -155,12 +176,66 @@ const NewProxy = () => {
                                                                     </FormLabel>
                                                                     <div className='md:w-3/4 md:py-3 break-all lg:break-words'>
                                                                         <FormControl>
-                                                                            <Input
+                                                                            {element.field === "current_password" ? (
+                                                                                <div className='grid grid-cols-8 gap-4'>
+                                                                                    <Input
+                                                                                        placeholder={`. . .`}
+                                                                                        {...field}
+                                                                                        type={isShow1 ? "text" : "password"}
+                                                                                        value={field.value !== undefined ? String(field.value) : ''}
+                                                                                        className='col-span-7'
+                                                                                    />
+                                                                                    <div className='grid justify-items-center '>
+                                                                                        {isShow1 ? (
+                                                                                            <EyeSlashIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow1(prev => !prev)} />
+                                                                                        ) : (
+                                                                                            <EyeIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow1(prev => !prev)} />
+                                                                                        )}
+                                                                                    </div>
+                                                                                </div>
+                                                                            ) : (
+                                                                                element.field === "new_password" ? (
+                                                                                    <div className='grid grid-cols-8 gap-4'>
+                                                                                        <Input
+                                                                                            placeholder={`. . .`}
+                                                                                            {...field}
+                                                                                            type={isShow2 ? "text" : "password"}
+                                                                                            value={field.value !== undefined ? String(field.value) : ''}
+                                                                                            className='col-span-7'
+                                                                                        />
+                                                                                        <div className='grid justify-items-center '>
+                                                                                            {isShow2 ? (
+                                                                                                <EyeSlashIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow2(prev => !prev)} />
+                                                                                            ) : (
+                                                                                                <EyeIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow2(prev => !prev)} />
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                ) : (
+                                                                                    <div className='grid grid-cols-8 gap-4'>
+                                                                                        <Input
+                                                                                            placeholder={`. . .`}
+                                                                                            {...field}
+                                                                                            type={isShow3 ? "text" : "password"}
+                                                                                            value={field.value !== undefined ? String(field.value) : ''}
+                                                                                            className='col-span-7'
+                                                                                        />
+                                                                                        <div className='grid justify-items-center '>
+                                                                                            {isShow3 ? (
+                                                                                                <EyeSlashIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow3(prev => !prev)} />
+                                                                                            ) : (
+                                                                                                <EyeIcon className='cursor-pointer w-10 h-10 col-span-1' onClick={() => setIsShow3(prev => !prev)} />
+                                                                                            )}
+                                                                                        </div>
+                                                                                    </div>
+                                                                                )
+                                                                            )}
+                                                                            {/* <Input
                                                                                 placeholder={`. . .`}
                                                                                 {...field}
                                                                                 type={"text"}
                                                                                 value={field.value !== undefined ? String(field.value) : ''}
-                                                                            />
+                                                                            /> */}
 
                                                                         </FormControl>
 
@@ -187,7 +262,7 @@ const NewProxy = () => {
                                     <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(14,165,233)" }} type="submit">Update Proxy</Button>
                                 </div>
                                 <div>
-                                    <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button">Close</Button>
+                                    <Button className=' transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300' style={{ backgroundColor: "rgb(241, 245, 249)", color: "#595959" }} type="button" onClick={()=> {router.back()}}>Close</Button>
                                 </div>
                             </div>
                         </form>

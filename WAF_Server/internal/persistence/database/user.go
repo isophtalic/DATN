@@ -1,6 +1,7 @@
 package database
 
 import (
+	"strings"
 	"waf_server/internal/model"
 	"waf_server/internal/persistence/postgres"
 	"waf_server/internal/pkg/pagination"
@@ -71,7 +72,13 @@ func (repo *PostgresUserProvider) FindUserByEmail(email string) (model.User, err
 func (repo *PostgresUserProvider) ListUser(pgn *pagination.Pagination[model.UserResponse]) (*pagination.Pagination[model.UserResponse], error) {
 	database := repo.db
 	results := make([]model.UserResponse, 0)
-	tx := database.Model(&model.User{}).Scopes(pagination.Paginate(&model.User{}, pgn, database)).Select(SELECT_FIELD_USER).Find(&results)
+
+	var tx *gorm.DB
+	if len(strings.TrimSpace(pgn.Search)) == 0 {
+		tx = database.Model(&model.User{}).Scopes(pagination.Paginate(&model.User{}, pgn, database)).Select(SELECT_FIELD_USER).Find(&results)
+	} else {
+		tx = database.Model(&model.User{}).Where("username LIKE ?", "%"+pgn.Search+"%").Scopes(pagination.Paginate(&model.User{}, pgn, database.Where("username LIKE ?", "%"+pgn.Search+"%"))).Select(SELECT_FIELD_USER).Find(&results)
+	}
 	pgn.Records = results
 
 	if tx.Error != nil {
@@ -89,7 +96,7 @@ func (repo *PostgresUserProvider) UpdateByID(id string, cmd model.User) error {
 
 func (repo *PostgresUserProvider) DeleteByID(id string) error {
 	database := repo.db
-	tx := database.Model(&model.User{}).Delete(id)
+	tx := database.Model(&model.User{}).Delete(&model.User{ID: id})
 
 	return tx.Error
 }

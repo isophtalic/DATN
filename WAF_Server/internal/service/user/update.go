@@ -42,5 +42,12 @@ func ChangePassword(id string, cmd model.ChangePass, actor string) error {
 }
 
 func Delete(id string) error {
+	user, err := persistence.User().FindUserByID(id)
+	if err != nil {
+		return fmt.Errorf("cannot find user")
+	}
+	if user.Role == 0 {
+		return fmt.Errorf("action not allow")
+	}
 	return persistence.User().DeleteByID(id)
 }

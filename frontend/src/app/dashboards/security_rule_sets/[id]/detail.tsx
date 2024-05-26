@@ -12,6 +12,7 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { DateTime } from '@/lib/datetime';
 import RuleSetTable from './ruleset/rule_table';
 import DataRuleTable from './datarule/datarule_table';
+import ProxiesTable from './proxies_table/proxies_table';
 
 const DetailPage = ({ data, proxy_id }: DetailPageProps) => {
     console.log(data);
@@ -106,6 +107,9 @@ const DetailPage = ({ data, proxy_id }: DetailPageProps) => {
                 </div>
                 <div>
                     <DataRuleTable />
+                </div>
+                <div>
+                    <ProxiesTable />
                 </div>
             </div>
         </div>

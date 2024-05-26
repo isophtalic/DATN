@@ -18,7 +18,7 @@ type Blacklist struct {
 
 type AccessList struct {
 	AccessListID string    `json:"accesslist_id" gorm:"type:uuid;primary_key"`
-	Name         string    `json:"name" gorm:"type:varchar(20);not null"`
+	Name         string    `json:"name" gorm:"type:varchar(50);not null"`
 	UpdatedAt    time.Time `json:"updated_at" gorm:"type:timestamp;not null"`
 }
 

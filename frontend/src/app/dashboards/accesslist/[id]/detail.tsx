@@ -11,15 +11,40 @@ import { CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/outline';
 import { DateTime } from '@/lib/datetime';
 import BlacklistTable from './blackist_table/blackist_table';
 import ProxiesTable from './proxies_table/proxies_table';
+import AccesslistAPI from '@/apis/accesslist';
+import { toast } from '@/components/ui/use-toast';
+import { useRouter } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
+
+async function deleteAccesslist(id: string, router: AppRouterInstance) {
+    try {
+        const res = await AccesslistAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            router.back()
+            // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
+    }
+}
 
 const DetailPage = ({ data, accesslist_id }: DetailPageProps) => {
     console.log(data);
+    const router = useRouter()
     const accesslist = [
         {
             title: `Access List Detail: ${data.name}`,
             icon: <div className='ml-auto flex items-center'>
-                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
+                <div className='p-4 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }} onClick={() => deleteAccesslist(accesslist_id, router)}>
                     {/* TODO: delete proxy*/}
                     <TrashIcon className="w-7 h-7 " />
                 </div>

@@ -4,6 +4,7 @@ import { ColumnDef } from "@tanstack/react-table"
 
 import { CheckCircleIcon, TrashIcon, PencilSquareIcon } from "@heroicons/react/24/outline"
 import Link from "next/link"
+import ActionsCell from "./actions_cell"
 type ColumnProps = {
     onDelete: (id: string) => void
 }
@@ -74,15 +75,7 @@ export const getColumns = ({ onDelete }: ColumnProps): ColumnDef<UserInput>[] =>
     cell: ({ row }) => {
         const payment = row.original
         return (
-            <div className="flex flex-row justify-end">
-                <div onClick={() => onDelete(payment.id as string)} className="cursor-pointer w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border hover:border-sky-500">
-                    <TrashIcon className='w-6 h6' />
-                </div>
-                <div className="w-5"></div>
-                <Link className="cursor-pointer w-10 h-10 flex justify-center rounded-lg hover:bg-sky-500 hover:text-white shadow border  hover:border-sky-500" href={`/dashboards/users/${payment.id}/reset-pass`}>
-                    <PencilSquareIcon className='w-6 h6' />
-                </Link>
-            </div>
+            <ActionsCell user={payment} onDelete={onDelete} />
         )
     },
 }

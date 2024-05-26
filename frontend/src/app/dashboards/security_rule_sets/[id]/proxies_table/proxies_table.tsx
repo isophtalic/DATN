@@ -1,45 +1,34 @@
 'use client'
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 
-import { getColumns } from './columns'
+import { getProxyColumns } from './columns'
 import { DataTable } from './data-table'
 import { PaginationState } from '@tanstack/react-table'
 import { Skeleton } from "@/components/ui/skeleton"
-import { InitialPaginationState } from '@/store/constants/const'
-import { useRouter } from 'next/navigation'
+import { DebounceValue, InitialPaginationState } from '@/store/constants/const'
+import { useRouter, useParams } from 'next/navigation'
 
 
 import { MagnifyingGlassIcon } from '@heroicons/react/24/outline'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import UserAPI from '@/apis/users'
-import { toast } from '@/components/ui/use-toast'
 import { useDebounce } from "@uidotdev/usehooks";
-import useUserStore from '@/store/user'
+import AccesslistAPI from '@/apis/accesslist'
+import ProxyAPI from '@/apis/proxy'
+import { toast } from '@/components/ui/use-toast'
 
-async function getData(pagination: PaginationState): Promise<any> {
-    let result: any[] = []
+async function getData(id: string, pagination: PaginationState): Promise<any> {
     try {
-        const response = await UserAPI.view(pagination)
+        const response = await AccesslistAPI.showProxies(id, pagination)
         return response.data
     } catch (error) {
         console.log(error);
     }
 }
 
-async function searchData(pagination: PaginationState, valueSearch: string): Promise<any> {
-    let result: any[] = []
+const deleteProxy = async (id: string, refreshData: () => void) => {
     try {
-        const response = await UserAPI.view(pagination, valueSearch)
-        return response.data
-    } catch (error) {
-        console.log(error);
-    }
-}
-
-async function deleteItem(id: string, refreshData: () => void) {
-    try {
-        const res = await UserAPI.deleteByID(id);
+        const res = await ProxyAPI.deleteByID(id);
         if (res.success) {
             toast({
                 description: "Delete Successfully",
@@ -54,17 +43,24 @@ async function deleteItem(id: string, refreshData: () => void) {
             description: `${err}`,
         });
     }
+};
+
+async function searchData(id: string, pagination: PaginationState, valueSearch: string): Promise<any> {
+    try {
+        const response = await AccesslistAPI.showProxies(id, pagination, valueSearch)
+        return response.data
+    } catch (error) {
+        console.log(error);
+    }
 }
 
-const UserTable = () => {
+const ProxiesTable = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
-    const [data, setData] = useState<UserInput[]>([]);
+    const [data, setData] = useState<ProxyViewer[]>([]);
     const [pageCount, setPageCount] = useState<number>(1);
     const [valueSearch, setValueSearch] = useState<string>("")
-    const debouncedSearchTerm = useDebounce(valueSearch, 800);
-
-    const userStore = useUserStore()
+    const debouncedSearchTerm = useDebounce(valueSearch, DebounceValue);
 
     // const initData = await getData(initialStatePagination)
 
@@ -72,46 +68,49 @@ const UserTable = () => {
 
     const handlePaginationChange = (pagination: PaginationState) => {
         setLoading(true);
-        // console.log("🚀 ~ handlePaginationChange ~ pagination:", pagination)
         setPagination(() => pagination)
     }
 
     const router = useRouter()
+    const params = useParams()
+    let secruleset_id = params.id
+    if (Array.isArray(secruleset_id)) {
+        secruleset_id = secruleset_id[0]
+    }
 
+    const handleBtnCreate = () => {
+        router.push("/dashboards/proxy/new")
+    }
 
     const fetchData = async () => {
-        setLoading(false);
-        var newData
+        setLoading(true);
         try {
-            newData = await getData(pagination)
+            const newData = await getData(secruleset_id, pagination);
             if (newData) {
                 setPageCount(newData.total_pages ?? 1);
                 setData(newData.records ?? []);
             }
         } catch (error) {
-            console.log("🚀 ~ fetchData ~ error:", error)
-            return
+            console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const search = async () => {
-        setLoading(false);
-        var newData
+        setLoading(true);
         try {
-            newData = await searchData(pagination, valueSearch)
+            const newData = await searchData(secruleset_id, pagination, valueSearch);
             if (newData) {
                 setPageCount(newData.total_pages ?? 1);
                 setData(newData.records ?? []);
             }
         } catch (error) {
-            console.log("🚀 ~ fetchData ~ error:", error)
-            return
+            console.error("Error fetching data:", error);
         } finally {
             setLoading(false);
         }
-    }
+    };
 
     const handleSearch = (e: any) => {
         setValueSearch(e.target.value);
@@ -121,20 +120,14 @@ const UserTable = () => {
         search()
     }, [debouncedSearchTerm])
 
-
     useEffect(() => {
         search()
     }, [pagination])
 
-    const onDelete = useCallback((id: string) => deleteItem(id, fetchData), [pagination]);
+    const onDeleteItem = useCallback((id: string) => deleteProxy(id, fetchData), [pagination]);
 
-    const columns = useMemo(() => getColumns({ onDelete }), [onDelete]);
+    const columns = useMemo(() => getProxyColumns({ onDeleteItem }), [onDeleteItem]);
 
-    const handleBtnCreate = () => {
-        router.push("/dashboards/users/new")
-    }
-
-    const validateUser = userStore.user.id !== "" && userStore.user.role == 0
 
     return (
         <div>
@@ -142,8 +135,8 @@ const UserTable = () => {
             <div>
                 <div>
                     <div>
-                        <h1 className='font-normal text-xl md:text-xl mb-3 flex items-center'>
-                            <span>Users</span>
+                        <h1 className='font-normal text-xl md:text-xl mb-3 flex items-center mt-8 text-gray-500'>
+                            <span>Proxy</span>
                         </h1>
                     </div>
                     <div className="flex">
@@ -153,11 +146,7 @@ const UserTable = () => {
                         </div>
                         <div className="w-full flex items-center mb-6">
                             <div className="flex-shrink-0 ml-auto">
-                                {validateUser ? (
-                                    <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreate}>Create User</Button>
-                                ) : (
-                                    <></>
-                                )}
+                                <Button className="flex-shrink-0 shadow rounded focus:outline-none ring-primary-200 transition ease-in-out delay-150 hover:-translate-y-1 hover:scale-110 duration:300 font-bold" style={{ backgroundColor: "rgb(14,165,233)" }} onClick={handleBtnCreate}>Create Proxy</Button>
                             </div>
                         </div>
                     </div>
@@ -171,7 +160,8 @@ const UserTable = () => {
                         </div>
                     </div>
                 ) : (
-                    <DataTable columns={columns} data={data} pageCount={pageCount} pagination={pagination} onSetPagination={handlePaginationChange} />
+
+                    <DataTable columns={columns} pageCount={pageCount} data={data} pagination={pagination} onSetPagination={handlePaginationChange} />
                 )}
             </div>
 
@@ -179,4 +169,4 @@ const UserTable = () => {
     )
 }
 
-export default UserTable
+export default ProxiesTable

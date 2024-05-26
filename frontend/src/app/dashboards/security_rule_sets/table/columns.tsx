@@ -21,27 +21,19 @@ type SecRuleSetColumnProps = {
 
 export const getColumns = ({ onDelete }: SecRuleSetColumnProps): ColumnDef<SecRuleInterface>[] => [
     {
-        cell: ({ row }) => {
-            return (
-                <span key={row.original.secrule_id}>
-                    {row.index + 1}
-                </span>
-            )
-        },
-        header: "No."
-    },
-    {
         accessorKey: "name",
         header: ({ column }) => {
             return (
-                <Button
-                    className="w-full"
-                    variant="ghost"
-                    onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-                >
-                    Name
-                    <ArrowUpDown className="ml-2 h-4 w-4" />
-                </Button>
+                <div>
+                    <Button
+                        className="w-full justify-start pl-0"
+                        variant="ghost"
+                        onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+                    >
+                        Name
+                        <ArrowUpDown className="ml-2 h-4 w-4" />
+                    </Button>
+                </div>
             )
         },
     },
