@@ -13,6 +13,8 @@ import { TrashIcon, PencilSquareIcon } from '@heroicons/react/24/outline';
 import { DateTime } from '@/lib/datetime';
 import DataRuleAPI from '@/apis/datarule'
 import { toast } from '@/components/ui/use-toast'
+import { useRouter } from 'next/navigation'
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime'
 
 const updateRule = (id: string, ruleUpdated: DataRuleInterface) => {
     DataRuleAPI.updateItem(id, ruleUpdated).then(res => {
@@ -37,6 +39,25 @@ const updateRule = (id: string, ruleUpdated: DataRuleInterface) => {
     })
 }
 
+async function deleteItem(id: string, router: AppRouterInstance) {
+    try {
+        const res = await DataRuleAPI.deleteByID(id);
+        if (res.success) {
+            toast({
+                description: "Delete Successfully",
+            });
+            router.back(); // Refresh data after successful deletion
+        } else {
+            throw new Error(res.message);
+        }
+    } catch (err) {
+        toast({
+            variant: "destructive",
+            description: `${err}`,
+        });
+    }
+}
+
 const DetailPage = ({ data, dataid }: DetailPageProps) => {
     console.log("🚀 ~ DetailPage ~ data:", data)
     const [isEdit, setEdit] = useState<boolean>(false)
@@ -51,6 +72,8 @@ const DetailPage = ({ data, dataid }: DetailPageProps) => {
     const defaultName = data.name
     const [name, setName] = useState<string>(defaultName)
     const [nameTMP, setNameTMP] = useState<string>(defaultName)
+
+    const router = useRouter()
 
     const handleEdit = () => {
         setEdit(true)
@@ -92,7 +115,7 @@ const DetailPage = ({ data, dataid }: DetailPageProps) => {
         {
             title: `Detail Data: ${data.name}`,
             icon: <div className='ml-auto flex items-center'>
-                <div className='p-4 cursor-pointer rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }}>
+                <div className='p-4 cursor-pointer rounded-lg hover:bg-gray-200 dark:hover:bg-gray-800' style={{ cursor: 'pointer' }} onClick={() => deleteItem(dataid, router)}>
                     {/* TODO: delete rule*/}
                     <TrashIcon className="w-7 h-7 " />
                 </div>

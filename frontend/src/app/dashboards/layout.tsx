@@ -17,6 +17,11 @@ const DashboardLayout = ({
                         <Image src="/images/waf-logo.jpg" alt="WAF Logo" className="h-16" width={300} height={40}></Image>
                     </Link>
                 </div>
+                <div className='col-span-3 text-xl flex justify-center items-center' style={{ color: "rgb(53, 162, 235)" }}>
+                    <div className='w-1/2 h-2/3 flex justify-center items-center rounded-full border shadow'>
+                        Web Application Firewall Management
+                    </div>
+                </div>
                 <div className='col-end-9 col-span-2'>
                     <Header />
                 </div>
