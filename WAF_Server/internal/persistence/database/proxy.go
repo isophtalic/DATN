@@ -85,7 +85,7 @@ func (repo *PostgresProxyProvider) FindByAccesslistIDAndSearch(id string, pgn *p
 						Joins("INNER JOIN sources ON sources.proxy_id = proxies.proxy_id AND sources.host_name like ?", "%"+pgn.Search+"%"))).Find(&results)
 		// pgn.TotalRows
 	} else {
-		tx = database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database.Where(&model.Proxy{AccessListID_FK: id}))).Where(&model.Proxy{SecRuleID_FK: id}).Find(&results)
+		tx = database.Where(&model.Proxy{AccessListID_FK: id}).Scopes(pagination.Paginate(&model.Proxy{}, pgn, database.Where(&model.Proxy{AccessListID_FK: id}))).Find(&results)
 	}
 	pgn.Records = results
 
@@ -111,7 +111,7 @@ func (repo *PostgresProxyProvider) FindBySecRuleIDAndSearch(id string, pgn *pagi
 						Joins("INNER JOIN sources ON sources.proxy_id = proxies.proxy_id AND sources.host_name like ?", "%"+pgn.Search+"%"))).Find(&results)
 		// pgn.TotalRows
 	} else {
-		tx = database.Scopes(pagination.Paginate(&model.Proxy{}, pgn, database.Where(&model.Proxy{SecRuleID_FK: id}))).Where(&model.Proxy{SecRuleID_FK: id}).Find(&results)
+		tx = database.Where(&model.Proxy{SecRuleID_FK: id}).Scopes(pagination.Paginate(&model.Proxy{}, pgn, database.Where(&model.Proxy{SecRuleID_FK: id}))).Find(&results)
 	}
 	pgn.Records = results
 

@@ -123,6 +123,7 @@ const SecRuleAPI = {
     view,
     showRuleSets,
     showDataRule,
+    showProxies,
     newItem,
     updateItem,
     deleteByID

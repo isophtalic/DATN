@@ -127,25 +127,25 @@ const TotalComponent = () => {
                         <div className='p-8 shadow-lg' style={{ backgroundColor: " #fff", borderRadius: "20px" }}>
                             <div className='font-bold'>Top By Atack Type</div>
                             <div className="flex flex-row items-center mt-9">
-                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_attack_type, "field")} dataArray={GetArrayDataByField(data.top_attack_type, "count")} comment='Count'></BarChartCustom>
+                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_attack_type, "field")} dataArray={GetArrayDataByField(data.top_attack_type, "count")} comment='Quantity'></BarChartCustom>
                             </div>
                         </div >
                         <div className='p-8 shadow-lg' style={{ backgroundColor: " #fff", borderRadius: "20px" }}>
                             <div className='font-bold'>Top By RuleID</div>
                             <div className="flex flex-row items-center mt-9">
-                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_rule_id, "field")} dataArray={GetArrayDataByField(data.top_rule_id, "count")} comment='Count'></BarChartCustom>
+                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_rule_id, "field")} dataArray={GetArrayDataByField(data.top_rule_id, "count")} comment='Quantity'></BarChartCustom>
                             </div>
                         </div>
                         <div className='p-8 shadow-lg' style={{ backgroundColor: " #fff", borderRadius: "20px" }}>
                             <div className='font-bold'>Top By Host</div>
                             <div className="flex flex-row items-center mt-9">
-                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_by_host, "field")} dataArray={GetArrayDataByField(data.top_by_host, "count")} comment='Count'></BarChartCustom>
+                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_by_host, "field")} dataArray={GetArrayDataByField(data.top_by_host, "count")} comment='Quantity'></BarChartCustom>
                             </div>
                         </div>
                         <div className='p-8 shadow-lg' style={{ backgroundColor: " #fff", borderRadius: "20px" }}>
                             <div className='font-bold'>Top By Source Attack</div>
                             <div className="flex flex-row items-center mt-9">
-                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_by_source_attack, "field")} dataArray={GetArrayDataByField(data.top_by_source_attack, "count")} comment='Count'></BarChartCustom>
+                                <BarChartCustom title='test' labels={GetArrayDataByField(data.top_by_source_attack, "field")} dataArray={GetArrayDataByField(data.top_by_source_attack, "count")} comment='Quantity'></BarChartCustom>
                             </div>
                         </div>
                     </div >

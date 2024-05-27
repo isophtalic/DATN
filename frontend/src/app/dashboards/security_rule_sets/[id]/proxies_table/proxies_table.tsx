@@ -16,10 +16,12 @@ import { useDebounce } from "@uidotdev/usehooks";
 import AccesslistAPI from '@/apis/accesslist'
 import ProxyAPI from '@/apis/proxy'
 import { toast } from '@/components/ui/use-toast'
+import SecRuleAPI from '@/apis/secruleset'
 
 async function getData(id: string, pagination: PaginationState): Promise<any> {
     try {
-        const response = await AccesslistAPI.showProxies(id, pagination)
+        const response = await SecRuleAPI.showProxies(id, pagination)
+        console.log("🚀 ~ getData ~ response:", response)
         return response.data
     } catch (error) {
         console.log(error);
@@ -47,14 +49,14 @@ const deleteProxy = async (id: string, refreshData: () => void) => {
 
 async function searchData(id: string, pagination: PaginationState, valueSearch: string): Promise<any> {
     try {
-        const response = await AccesslistAPI.showProxies(id, pagination, valueSearch)
+        const response = await SecRuleAPI.showProxies(id, pagination, valueSearch)
         return response.data
     } catch (error) {
         console.log(error);
     }
 }
 
-const ProxiesTable = () => {
+const ProxiesTableSecRule = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [pagination, setPagination] = useState<PaginationState>(InitialPaginationState)
     const [data, setData] = useState<ProxyViewer[]>([]);
@@ -169,4 +171,4 @@ const ProxiesTable = () => {
     )
 }
 
-export default ProxiesTable
+export default ProxiesTableSecRule

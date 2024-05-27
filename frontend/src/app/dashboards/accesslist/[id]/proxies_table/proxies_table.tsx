@@ -86,6 +86,7 @@ const ProxiesTable = () => {
         setLoading(true);
         try {
             const newData = await getData(accesslist_id, pagination);
+            console.log("🚀 ~ fetchData ~ newProxy:", newData)
             if (newData) {
                 setPageCount(newData.total_pages ?? 1);
                 setData(newData.records ?? []);
